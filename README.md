@@ -58,6 +58,7 @@ Options：
     `atb.sh` 本地发布 等同于 `atb.sh -l`
     `atb.sh -r 244` 如果你的remote_server_flags中包含244 那么就会发布到244所代表的机器上
 ```
+<iframe height=500 width=500 src="http://ww4.sinaimg.cn/mw690/e75a115bgw1f3rrbzv1m8g209v0diqv7.gif">
 
 ##支持的操作系统
 * windows 通过git for windows执行可本地发布,远程发布未测试
