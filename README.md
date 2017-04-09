@@ -75,7 +75,7 @@ Options：
 
 ##本地脚本配置参数
 `本地脚本配置需要修改config文件`
-* git或svn更新命令 取决于你用的是svn还是git 需要修改下面的函数
+* git或svn更新命令 取决于你用的是svn还是git 需要atb.sh中的checkout_code函数
     ```shell
         function checkout_code(){
             echo "正在从资源库[ $repository_url ]检出代码"
