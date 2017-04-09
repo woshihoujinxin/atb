@@ -1,6 +1,7 @@
-`
-<iframe height=498 width=510 src='http://player.youku.com/embed/XMjY5ODE5NDc4MA==' frameborder=0 'allowfullscreen'></iframe>
-`
+
+<video width="480" height="320" controls>
+<source src="http://player.youku.com/embed/XMjY5ODE5NDc4MA==">
+</video>
 
 #轻量级持续集成工具 -- 简单配置 一键发布
 ##简介
