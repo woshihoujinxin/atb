@@ -72,10 +72,10 @@ Options：
 
 ##本地脚本配置参数
 * git或svn更新命令 取决于你用的是svn还是git 需要修改下面的函数
-    ```
+    ```shell
         function checkout_code(){
             echo "正在从资源库[ $repository_url ]检出代码"
-            <font color=#FF3E96 size=7 face="黑体">[svn update| git pull] </font>
+            [svn update| git pull] -- 修改此处
             return 0
         }
     ```
