@@ -103,7 +103,7 @@ Options：
     `remote_server_flags=(A B C D)`
 
     `以上参数必须保持一致 因为数组里的元素对应了不同环境的一个属性`
-* 本地profile maven的profile参数
+* 本地profile maven的profile参数 没有可以为空
     
     `local_profile="dev"`
 * 本地tomcat webapps目录
@@ -115,7 +115,7 @@ Options：
 * maven本地路径 若此处没有设置，则使用环境变量中配置的maven
     
     `maven_home=""`
-* 项目本地路径 
+* 项目所在本地路径 不含工程名
     
     `local_project_basepath="/home/houjinxin/document/trunk"`
 * 项目名称

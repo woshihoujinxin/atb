@@ -49,6 +49,11 @@ function clear_project(){
 ###			编译打包
 ##############################################################################
 function package(){
+	if [[ "${profile}" = "" ]]; then
+		echo "mvn clean package -DskipTests=true"
+		${maven_shell} clean package -DskipTests=true
+		return 0
+	fi
 	echo "mvn clean package -DskipTests=true -P$profile"
 	${maven_shell} clean package -DskipTests=true -P${profile}
 	return 0
@@ -179,27 +184,27 @@ function check_num(){
 ##############################################################################
 function echo_params(){
 
-	echo "Param: remote_server_paths=$remote_server_paths"
-	echo "Param: remote_users=$remote_users"
-	echo "Param: remote_ips=$remote_ips"
-	echo "Param: remote_ports=$remote_ports"
-	echo "Param: remote_pwds=$remote_pwds"
-	echo "Param: remote_profiles=$remote_profiles"
-	echo "Param: remote_server_flags=$remote_server_flags"
-	echo "Param: local_profile=$local_profile"
-	echo "Param: local_server_path=$local_server_path"
-	echo "Param: remote_project_basepath=$remote_project_basepath"
-	echo "Param: maven_home=$maven_home"
-	echo "Param: local_project_basepath=$local_project_basepath"
-	echo "Param: project_name=$project_name"
-	echo "Param: war_sub_project_name=$war_sub_project_name"
-	echo "Param: war_name=$war_name"
-	echo "Param: remote_shell_dir=$remote_shell_dir"
-	echo "Param: repository_url=$repository_url"
-	echo "Param: parent_project_path=$parent_project_path"
-	echo "Param: sub_project_path=$sub_project_path"	
-	echo "Param: war_path=$war_path"
-	echo "Param: local_tomcat_process_name=$local_tomcat_process_name"
+	echo "Param: remote_server_paths = $remote_server_paths"
+	echo "Param: remote_users = $remote_users"
+	echo "Param: remote_ips = $remote_ips"
+	echo "Param: remote_ports = $remote_ports"
+	echo "Param: remote_pwds = $remote_pwds"
+	echo "Param: remote_profiles = $remote_profiles"
+	echo "Param: remote_server_flags = $remote_server_flags"
+	echo "Param: local_profile = $local_profile"
+	echo "Param: local_server_path = $local_server_path"
+	echo "Param: remote_project_basepath = $remote_project_basepath"
+	echo "Param: maven_home = $maven_home"
+	echo "Param: local_project_basepath = $local_project_basepath"
+	echo "Param: project_name = $project_name"
+	echo "Param: war_sub_project_name = $war_sub_project_name"
+	echo "Param: war_name = $war_name"
+	echo "Param: remote_shell_dir = $remote_shell_dir"
+	echo "Param: repository_url = $repository_url"
+	echo "Param: parent_project_path = $parent_project_path"
+	echo "Param: sub_project_path = $sub_project_path"	
+	echo "Param: war_path = $war_path"
+	echo "Param: local_tomcat_process_name = $local_tomcat_process_name"
 
 	echo "Param: profile = $profile"
 	echo "Param: server_flag = $server_flag" 
@@ -243,7 +248,7 @@ local_server_path="/home/houjinxin/document/apache-tomcat-8.0.38"
 remote_project_basepath="/home/houjinxin/document/build"
 #maven本地路径
 maven_home=""
-#项目本地路径
+#项目所在本地路径
 local_project_basepath="/home/houjinxin/document/trunk"
 #项目名称
 project_name="TaskCenter"
