@@ -64,6 +64,7 @@ Options：
 * mac
 
 ##服务器脚本配置参数
+`远程服务器需要修改restart.sh`
 * 服务器上tomcat根目录
 
     `server_path="a/b/c"`
@@ -72,6 +73,7 @@ Options：
     `process_flag="apache-tomcat-8.5.9"`
 
 ##本地脚本配置参数
+`本地脚本配置需要修改config文件`
 * git或svn更新命令 取决于你用的是svn还是git 需要修改下面的函数
     ```shell
         function checkout_code(){
