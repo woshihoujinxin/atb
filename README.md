@@ -85,61 +85,61 @@ Options：
 
 * 远程服务器路径
 
-    `remote_server_paths=(A B C D)`
+    `config_remote_server_paths=(A B C D)`
 * 远程服务器用户
 
-    `remote_users=(A B C D)`
+    `config_remote_users=(A B C D)`
 * 远程服务器ip 
     
-    `remote_ips=(A B C D)`
+    `config_remote_ips=(A B C D)`
 * 远程服务器端口 一般都是22
 
-    `remote_ports=(A B C D)`
+    `config_remote_ports=(A B C D)`
 * 远程服务器密码 如果你对各个环境密码倒背如流，出于安全考虑你可以不设置，这里设置的目的是在终端打出密码，方便在输密码时拷贝。
     
-    `remote_pwds=(A B C D)`
+    `config_remote_pwds=(A B C D)`
 * maven打包用的远程profiles
     
-    `remote_profiles=(A B C D)`
+    `config_remote_profiles=(A B C D)`
 * 远程server_flags 用于区分远程服务器的标识
     
-    `remote_server_flags=(A B C D)`
+    `config_remote_server_flags=(A B C D)`
 
     `以上参数必须保持一致 因为数组里的元素对应了不同环境的一个属性`
 * 本地profile maven的profile参数 没有可以为空
     
-    `local_profile="dev"`
+    `config_local_profile="dev"`
 * 本地tomcat webapps目录
     
-    `local_server_path="/home/houjinxin/document/apache-tomcat-8.0.38"`
+    `config_local_server_path="/home/houjinxin/document/apache-tomcat-8.0.38"`
 * 项目远程build路径 一般专门用来发布版本的代码和开发代码不同时使用一个路径，自己用的话无所谓但会涉及到冲突合并的问题
     
-    `remote_project_basepath="/home/houjinxin/document/build"`
+    `config_remote_project_basepath="/home/houjinxin/document/build"`
 * maven本地路径 若此处没有设置，则使用环境变量中配置的maven
     
-    `maven_home=""`
+    `config_maven_home=""`
 * 项目所在本地路径 不含工程名
     
-    `local_project_basepath="/home/houjinxin/document/trunk"`
+    `config_local_project_basepath="/home/houjinxin/document/trunk"`
 * 项目名称
     
-    `project_name="TaskCenter"`
+    `config_project_name="TaskCenter"`
 * war包所在的maven子模块,只支持一个war包的工程 为空时代表在父级目录下的target中存在war包
     
-    `war_sub_project_name=""`
+    `config_war_sub_project_name=""`
 * war包名
     
-    `war_name="TaskCenter.war"`
+    `config_war_name="TaskCenter.war"`
 * 远程重启shell目录 将restart脚本放到远程服务器指定的目录下，即可远程重启tomcat
     
-    `remote_shell_dir="/home/product"`
+    `config_remote_shell_dir="/home/product"`
 * 项目git或svn地址
     
-    `repository_url="svn://192.168.50.27/micro_crawler/Develop/projects/trunk/TaskCenter"`
+    `config_repository_url="svn://192.168.50.27/micro_crawler/Develop/projects/trunk/TaskCenter"`
 
 * 本地tocmat进程唯一筛选条件，本地多实例部署时根据这一个条件杀死指定进程（Linux/Unix可用，windows未测试）
     
-    `local_tomcat_process_name="apache-tomcat-8.0.38"`
+    `config_local_tomcat_process_name="apache-tomcat-8.0.38"`
 
 ##我的联系方式
 * Email: woshihoujinxin@163.com
