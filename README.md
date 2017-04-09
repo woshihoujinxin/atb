@@ -1,3 +1,5 @@
+<iframe height=498 width=510 src='http://player.youku.com/embed/XMjY5ODE5NDc4MA==' frameborder=0 'allowfullscreen'></iframe>
+
 #轻量级持续集成工具 -- 简单配置 一键发布
 ##简介
 在开发中我们需要频繁的调整代码并发布到各种环境去测试。通常我们会花费比部署代码要多的多的时间去进入和退出各个目录、执行启动脚本、查看启动日志。当你做完这些事情你可能忘了你只是为了看看代码执行的效果。为了避免这种情况而把更多的精力放到代码测试上，借鉴Jenkins的思想，写了这么个工具。它具有以下功能：
@@ -58,7 +60,6 @@ Options：
     `atb.sh` 本地发布 等同于 `atb.sh -l`
     `atb.sh -r 244` 如果你的remote_server_flags中包含244 那么就会发布到244所代表的机器上
 ```
-<iframe height=498 width=510 src='http://player.youku.com/embed/XMjY5ODE5NDc4MA==' frameborder=0 'allowfullscreen'></iframe>
 
 ##支持的操作系统
 * windows 通过git for windows执行可本地发布,远程发布未测试
