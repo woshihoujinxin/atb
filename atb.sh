@@ -100,7 +100,7 @@ function read_conf(){
 	echo "#################读取配置文件开始#################"
 	while read -r line;do  
     	eval "$line"  
-	done < config
+	done < ~/config
 
 	printConfigParam
 
