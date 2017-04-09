@@ -58,10 +58,10 @@ Options：
     `atb.sh` 本地发布 等同于 `atb.sh -l`
     `atb.sh -r 244` 如果你的remote_server_flags中包含244 那么就会发布到244所代表的机器上
 ```
-<embed src='http://player.youku.com/player.php/sid/XMjY5ODE5NjkzMg==/v.swf' allowFullScreen='true' quality='high' width='480' height='400' align='middle' allowScriptAccess='always' type='application/x-shockwave-flash'></embed>
+
 ##视频演示
-远程发布：[]()
-本地发布：[]()
+* [http://v.youku.com/v_show/id_XMjY5ODE5NDc4MA==.html?spm=a2hzp.8244740.userfeed.5!3~5~5~5!3~5~A](远程发布)
+* [http://v.youku.com/v_show/id_XMjY5ODE5NjkzMg==.html?spm=a2hzp.8244740.userfeed.5!2~5~5~5!3~5~A#paction](本地发布)
 
 ##支持的操作系统
 * windows 通过git for windows执行可本地发布,远程发布未测试
