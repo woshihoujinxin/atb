@@ -1,0 +1,321 @@
+#!/bin/bash
+##############################################################################
+### 			没有任何修饰符参数 : 原生参数
+### 			<>  : 占位参数
+### 			[]  : 可选组合
+### 			()  : 必选组合
+### 			|   : 互斥参数
+### 			... : 可重复指定前一个参数
+### 			--  : 标记后续参数类型
+##############################################################################
+
+#TODO：支持多机部署
+
+##############################################################################
+###				变量声明 var=value 等号必须前后紧挨着
+##############################################################################
+
+#项目本地路径
+project_basepath="/Users/houjinxin/Documents"
+#项目名称
+project_name="maiev"
+#war包所在的maven子模块,只支持一个war包的工程 为空时代表在父及目录下的target中存在war包
+war_sub_project_name="maiev-web"
+#war包名
+war_name="maiev.war"
+#本地tomcat webapps目录
+local_server_path="/Users/houjinxin/Documents/apache-tomcat-8.5.9"
+#本地重启shell目录 此项配置用于支持执行本地脚本，在这个目录下放入要执行的脚本，然后改写restartLocalServer
+local_shell_dir="/Users/houjinxin/myShell"
+#远程tomcat webapps目录
+remote_server_path="/home/product/installed/apache-tomcat-8.5.9"
+#远程服务器用户
+remote_user="product"
+#远程服务器ip
+remote_ip="120.25.251.5"
+#远程服务器端口
+remote_port="22"
+#远程服务器密码 可以不设置
+remote_pwd="Hjx574311651$"
+#远程重启shell目录 将restart脚本放到远程服务器指定的目录下，即可远程重启tomcat
+remote_shell_dir="/home/product"
+
+#父目录
+parent_project_path="$project_basepath/$project_name"
+#子目录
+sub_project_path="$parent_project_path/$war_sub_project_name"
+#项目git地址
+git_url="https://git.oschina.net/yangsj/maiev.git"
+#maven profile
+profile=""
+#本地或远程部署
+local_or_remote="-l"
+#最终server_path
+server_path=""
+
+##############################################################################
+###			显示帮助
+##############################################################################
+function show_help(){
+	echo
+	echo "usage: atb [Options]"
+	echo
+	echo "Options："
+	echo " -c                  clean 工程"
+	echo " -du                 跳过编译直接上传已存在war包"
+	echo " -du [ -r|-l ]       跳过编译直接上传远程服务器或本地服务器"
+	echo " -h                  帮助"
+	echo " -l                  自动编译打包本地部署"
+	echo " -r                  自动编译打包远程部署"
+}
+
+##############################################################################
+###			检出代码
+##############################################################################
+function checkout_code(){
+	echo "从[ $git_url ]检出代码"
+	git pull
+}
+
+##############################################################################
+###			maven clean
+##############################################################################
+function clean(){
+	echo "mvn clean"
+	#maven命令
+	mvn clean 
+	return 0
+}
+
+##############################################################################
+###			编译打包
+##############################################################################
+function package(){
+	checkout_code
+	if [ "$local_or_remote" = "-r" ] 
+	then
+		profile="prod"
+	elif [ "$local_or_remote" = "-l" ]
+	then
+		profile="local"
+	else 
+		profile="local"
+	fi
+	echo "开始打包 profile = $profile"
+	echo "mvn clean package -DskipTests=true -P$profile"
+	#maven命令
+	mvn clean package -DskipTests=true -P$profile
+	return 0
+}
+
+##############################################################################
+###			检查war是否已存在，不存在退出 返回值 0-存在，1-不存在
+##############################################################################
+function check_war(){
+	# 这里的-d 参数判断target路径是否存在
+	if [ -d "$1/target" ]; then
+		# echo "target目录已存在"
+		# 这里的-f参数判断war包是否存在
+		if [ -f "$1/target/$2" ]; then
+		 	# echo "$2已存在"
+		    return 0
+		fi
+	fi
+	echo "$2不存在"
+	return 1
+}
+
+##############################################################################
+###			上传前检查war是否已存在，不存在退出shell 返回值 0-存在，1-不存在
+##############################################################################
+function check_war_before_upload(){
+	#命令第一参数不为-du判断war包是否存在，若存在直接上传，不存在则编译打包
+	# echo "上传前检查war包是否已存在"
+	#调用函数
+	check_war $sub_project_path $war_name
+	#$?用于获取函数返回值
+	flag=$?
+	# echo "文件存在标志：$?（0-已存在，1-不存在）"
+	# $?=1文件不存在 $?=0文件存在
+	if [ "$flag" = "1" ]
+	then
+		echo "编译失败"
+		return 1
+	fi 
+	return 0
+}
+
+##############################################################################
+###			本地拷贝
+##############################################################################
+function local_copy(){
+	#本地tomcat路径
+	server_path="$local_server_path"
+	echo "进入war包目录：$sub_project_path/target"
+	cd "$sub_project_path/target"
+	echo "开始传输war包到本地服务器目录：$server_path/webapps"
+	# echo "cp $war_name $server_path/webapps/$war_name"
+	cp $war_name "$server_path/webapps/$war_name"
+}
+
+##############################################################################
+###			远程拷贝
+##############################################################################
+function remote_copy(){
+	#远程服务器路径
+	server_path="$remote_server_path"
+	echo "进入war包目录：$sub_project_path/target"
+	cd "$sub_project_path/target"
+	echo "开始传输war包到远程服务器目录：$server_path/webapps"
+	#方便拷贝密码
+	echo "密码：$remote_pwd"
+	# echo "scp $war_name $remote_user@$remote_ip:$server_path"
+	scp $war_name "$remote_user@$remote_ip:$server_path/webapps"
+}
+
+##############################################################################
+###			重启远程服务器
+##############################################################################
+function restart_remote_server() {
+	echo "ssh -t -T -p $remote_port $remote_user@$remote_ip nohup $remote_shell_dir/restart.sh &"
+	#执行服务器重启脚本
+	# -T      Disable pseudo-terminal allocation.
+    # -t      Force pseudo-terminal allocation.  This can be used to execute arbitrary screen-based programs on a remote machine, which can be very useful, e.g.
+    #   when implementing menu services.  Multiple -t options force tty allocation, even if ssh has no local tty.
+	# -p 指定端口号
+	ssh -t -T -p $remote_port $remote_user@$remote_ip "nohup $remote_shell_dir/restart.sh &"
+}
+
+##############################################################################
+###			重启本地服务器
+##############################################################################
+function restart_local_server() {
+	cd "$server_path"
+	# ./bin/shutdown.sh
+	ps -ef | grep tomcat | grep -v grep | awk '{print $2}'  | sed -e "s/^/kill -9 /g" | sh -
+	./bin/startup.sh
+	tail -f ./logs/catalina.out
+}
+
+
+##############################################################################
+###				帮助
+##############################################################################
+if [ "$1" = "-h" ]  
+then
+	show_help
+	exit 0
+fi
+
+#$#代表参数个数
+if [ $# = 1 ] ; then 
+	#一个参数且参数不是-du、-c、-h中的一个 即只有-l、-r时
+	if [ "$1" != "-du" -a "$1" != "-c" -a "$1" != "-h" ]; then
+		local_or_remote="$1"
+
+	fi
+elif [ $# = 2 ]; then
+	#两个参数第一个参数一定是-du
+	if [ "$2" != "-r" -o "$2" != "-l" ]; then
+		local_or_remote="$2"
+	fi
+fi 
+# echo $1 " == " $local_or_remote
+# exit 0
+
+echo "自动构建开始"
+echo "进入工程目录: $parent_project_path"
+cd "$parent_project_path"
+
+if [ "$1" = "-c" ]; then
+	clean
+	exit 0
+fi
+
+#命令第一参数不为-du编译打包
+if [ "$1" != "-du" ]
+then
+	package
+else
+	#命令第一参数不为-du判断war包是否存在，若存在直接上传，不存在则编译打包
+	echo "检查war包是否已存在"
+	#调用函数
+	check_war $sub_project_path $war_name
+	#$?用于获取函数返回值
+	flag=$?
+	# echo "文件存在标志：$?（0-已存在，1-不存在）"
+	# $?=1文件不存在 $?=0文件存在
+	if [ "$flag" = "1" ]
+	then
+		# echo "war包不存在需要重新编译打包"
+		package
+		##############################################################################
+		###				上传前检查war是否编译失败
+		##############################################################################
+		check_war_before_upload $sub_project_path $war_name
+		#$?用于获取函数返回值
+		flag=$?
+		# echo "文件存在标志：$?（0-已存在，1-不存在）"
+		# $?=1文件不存在 $?=0文件存在
+		if [ "$flag" = "1" ]
+		then
+			# echo "war包不存在请检查打包过程是否失败"
+			echo "结束！"
+			exit 1
+		fi 
+	else
+		echo "war包已存在"
+	fi 
+fi
+
+##############################################################################
+###				部署
+##############################################################################
+#默认发到本地服务器地址，当指定local值为n时才发送到远程
+if [ "$local_or_remote" = "-r" ] 
+then
+	# 多个条件判断 
+	# -a 与 
+	# -o 或 
+	# !  非
+	if [ "$remote_user" = "" -o "$remote_ip" = "" ]
+	then
+		echo "没有设置远程服务器登录信息，上传结束"
+		exit 1
+	fi
+	# #远程服务器路径
+	# server_path="$remote_server_path"
+	# echo "进入war包目录：$sub_project_path/target"
+	# cd "$sub_project_path/target"
+	# echo "开始传输war包到远程服务器目录：$server_path"
+	# #方便拷贝密码
+	# echo "密码：$remote_pwd"
+	# # echo "scp $war_name $remote_user@$remote_ip:$server_path"
+	# scp $war_name "$remote_user@$remote_ip:$server_path"
+	
+	remote_copy
+	restart_remote_server
+elif [ "$local_or_remote" = "-l" ] 
+then
+	# #本地tomcat路径
+	# server_path="$local_server_path"
+	# echo "进入war包目录：$sub_project_path/target"
+	# cd "$sub_project_path/target"
+	# echo "开始传输war包到本地服务器目录：$server_path"
+	# # echo "cp $war_name $server_path/$war_name"
+	# cp $war_name "$server_path/$war_name"
+	local_copy
+	restart_local_server
+else 
+	# #本地tomcat路径
+	# server_path="$local_server_path"
+	# echo "进入war包目录：$sub_project_path/target"
+	# cd "$sub_project_path/target"
+	# echo "开始传输war包到本地服务器目录：$server_path"
+	# # echo "cp $war_name $server_path/$war_name"
+	# cp $war_name "$server_path/$war_name"
+	local_copy
+	restart_local_server
+fi
+
+echo "重新部署结束"
