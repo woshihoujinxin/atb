@@ -75,7 +75,7 @@ Options：
     ```
         function checkout_code(){
             echo "正在从资源库[ $repository_url ]检出代码"
-            [svn update| git pull] 
+            <font color=#0099ff size=7 face="黑体">[svn update| git pull] </font>
             return 0
         }
     ```
