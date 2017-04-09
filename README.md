@@ -71,6 +71,15 @@ Options：
     `process_flag="apache-tomcat-8.5.9"`
 
 ##本地脚本配置参数
+* git或svn更新命令 取决于你用的是svn还是git 需要修改下面的函数
+    ```
+        function checkout_code(){
+            echo "正在从资源库[ $repository_url ]检出代码"
+            [svn update| git pull] 
+            return 0
+        }
+    ```
+
 * 远程服务器路径
 
     `remote_server_paths=(A B C D)`
