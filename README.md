@@ -13,14 +13,14 @@
 
 `注意：本脚本默认认为发布程序到Tomcat的webapps下，若使用其他服务器请自行修改脚本中容器启动部分的代码`
 
-##前置条件
+## 前置条件
 * 需要安装JDK并配置环境变量
 * 需要安装maven
 * 需要安装git或svn并配置到环境变量
 * 本地部署需要tomcat支持
 * 需要操作系统支持ssh命令，远程发布需要
 
-##使用方法
+## 使用方法
 
 1. 在本机上将atb.sh放到任意路径下
 2. 不论什么系统都将config文件放到家目录下,即`~`所代表的目录
@@ -52,23 +52,23 @@ Options：
  <server_flag>  远程server_flags用于标识上传到那一台远程服务器
 ```
 
-##示例
+## 示例
 ```
     `atb.sh -du -r` war包已存在的情况下直接发布war包到远程服务器，不存在重新打包再发布
     `atb.sh` 本地发布 等同于 `atb.sh -l`
     `atb.sh -r 244` 如果你的remote_server_flags中包含244 那么就会发布到244所代表的机器上
 ```
 
-##视频演示
+## 视频演示
 * [远程发布](http://v.youku.com/v_show/id_XMjY5ODE5NDc4MA==.html?spm=a2hzp.8244740.userfeed.5!3~5~5~5!3~5~A)
 * [本地发布](http://v.youku.com/v_show/id_XMjY5ODE5NjkzMg==.html?spm=a2hzp.8244740.userfeed.5!2~5~5~5!3~5~A#paction)
 
-##支持的操作系统
+## 支持的操作系统
 * windows 通过git for windows执行可本地发布,远程发布未测试
 * linux
 * mac
 
-##服务器脚本配置参数
+## 服务器脚本配置参数
 `远程服务器需要修改restart.sh`
 * 服务器上tomcat根目录
 
@@ -77,7 +77,7 @@ Options：
     
     `process_flag="apache-tomcat-8.5.9"`
 
-##本地脚本配置参数
+## 本地脚本配置参数
 `本地脚本配置需要修改config文件`
 * git或svn更新命令 取决于你用的是svn还是git 需要atb.sh中的checkout_code函数
     ```shell
@@ -146,7 +146,7 @@ Options：
     
     `config_local_tomcat_process_name="apache-tomcat-8.0.38"`
 
-##我的联系方式
+## 我的联系方式
 * Email: woshihoujinxin@163.com
 * QQ: 574311651
 * 微信：h574311651
