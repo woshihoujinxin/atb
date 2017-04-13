@@ -106,7 +106,7 @@ Options：
 * maven打包用的远程profiles
     
     `config_remote_profiles=(A B C D)`
-* 远程server_flags 用于区分远程服务器的标识
+* 远程server_flags 用于区分远程服务器的标识，必须设置为数字，一般设置为ip地址的最后一个点后的数字
     
     `config_remote_server_flags=(A B C D)`
 
