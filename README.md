@@ -43,7 +43,7 @@ Options：
  -h                              帮助
  -l                              自动编译打包本地部署
  -r <server_flag>                自动编译打包远程部署到指定的远程服务器
- -his -r <server_flag>           查看指定的远程服务器上备份详情"
+ -his -r <server_flag>           查看指定的远程服务器上备份历史
 
 ```
 
@@ -54,7 +54,7 @@ Options：
  h           -- help             帮助
  l           -- local            本地
  r           -- remote           远程
- his         -- history          历史
+ his         -- history          备份历史
  server_flag -- 服务器标识         用于标识上传到哪一台远程服务器
 
 ```
