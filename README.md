@@ -35,31 +35,31 @@
 6. 具体用法见下面帮助
 
 ```
-usage: atb [Options]
+ usage: atb [Options]
 
-Options：
- -c                                        clean 工程
- -du [ -l ]                                直接上传已存在war包到本地服务器
- -du -r <server_flag>                      直接上传已存在war包到指定的远程服务器
- -h                                        帮助
- -l                                        自动编译打包本地部署
- -r <server_flag>                          自动编译打包远程部署到指定的远程服务器
- -his -r <server_flag>                     查看指定的远程服务器上备份详情"
- -r <server_flag> -rb <backup_version>     回滚当前版本到backup_version指定的版本"
-
-```
+     Options：
+      -c                                        clean 工程
+      -du [ -l ]                                直接上传已存在war包到本地服务器
+      -du -r <server_flag>                      直接上传已存在war包到指定的远程服务器
+      -h                                        帮助
+      -l                                        自动编译打包本地部署
+      -r <server_flag>                          自动编译打包远程部署到指定的远程服务器
+      -his -r <server_flag>                     查看指定的远程服务器上备份详情"
+      -r <server_flag> -rb <backup_version>     回滚当前版本到backup_version指定的版本"
 
 ```
- Options说明
- c              -- clean           来自mvn clean
- du             -- direct upload   已有war包，直接上传；没有war包，重新打包上传 
- h              -- help            帮助
- l              -- local           本地
- r              -- remote          远程
- his            -- history         备份历史
- server_flag    -- 服务器标识        用于标识上传到哪一台远程服务器
- rb             -- rollback        回滚命令
- backup_version -- 备份版本号        与rb配合使用 用于指定回滚到的版本
+
+```
+    Options说明
+     c              -- clean           来自mvn clean
+     du             -- direct upload   已有war包，直接上传；没有war包，重新打包上传 
+     h              -- help            帮助
+     l              -- local           本地
+     r              -- remote          远程
+     his            -- history         备份历史
+     server_flag    -- 服务器标识        用于标识上传到哪一台远程服务器
+     rb             -- rollback        回滚命令
+     backup_version -- 备份版本号        与rb配合使用 用于指定回滚到的版本
 
 ```
 
