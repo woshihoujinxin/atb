@@ -10,7 +10,7 @@
 ##############################################################################
 
 ##############################################################################
-###			打印 banner
+###	    打印 banner
 ##############################################################################
 function show_banner(){
 	echo "##################################################################################################"
@@ -26,24 +26,25 @@ function show_banner(){
 }
 
 ##############################################################################
-###			显示帮助
+###	    显示帮助
 ##############################################################################
 function show_help(){
 	echo
 	echo "usage: atb [Options]"
 	echo
 	echo "Options："
-	echo " -c                              clean 工程"
-	echo " -du  [ -l ]                     跳过编译步骤直接上传已存在war包到本地服务器"
-	echo " -du -r <server_flag>            跳过编译步骤直接上传已存在war包到指定的远程服务器"
-	echo " -h                              帮助"
-	echo " -l                              自动编译打包本地部署"
-	echo " -r <server_flag>                自动编译打包远程部署到指定的远程服务器"
-	echo " -his -r <server_flag>           查看指定的远程服务器上备份历史"
+	echo " -c                                    clean 工程"
+	echo " -du  [ -l ]                           跳过编译步骤直接上传已存在war包到本地服务器"
+	echo " -du -r <server_flag>                  跳过编译步骤直接上传已存在war包到指定的远程服务器"
+	echo " -h                                    帮助"
+	echo " -l                                    自动编译打包本地部署"
+	echo " -r <server_flag>                      自动编译打包远程部署到指定的远程服务器"
+	echo " -his -r <server_flag>                 查看指定的远程服务器上备份历史"
+	echo " -r -rb <server_flag> <backup_version> 将指定服务器web应用回滚到指定版本"
 }
 
 ##############################################################################
-###				变量声明 var=value 等号必须前后紧挨着
+###    变量声明 var=value 等号必须前后紧挨着
 ##############################################################################
 
 #以下参数代表服务器配置信息有多少机器配置多少个,这里的配置用于取值
@@ -85,7 +86,7 @@ repository_url=""
 local_tomcat_process_name=""
 
 ##############################################################################
-###			打印配置参数
+###	    打印配置参数
 ##############################################################################
 function print_config_param(){
 	echo "config Param: remote_server_paths = ${config_remote_server_paths}"
@@ -110,7 +111,7 @@ function print_config_param(){
 }
 
 ##############################################################################
-###			读取配置文件
+###	   读取配置文件
 ##############################################################################
 function read_conf(){
 	# echo "#################读取配置文件开始#################"
@@ -142,7 +143,7 @@ function read_conf(){
 }
 
 ##############################################################################
-###			查看历史版本
+###	   查看历史版本
 ##############################################################################
 function show_deploy_history(){
 	echo "↓                                         备份列表                                               ↓"
@@ -152,7 +153,7 @@ function show_deploy_history(){
 }
 
 ##############################################################################
-###			检出代码
+###	   检出代码
 ##############################################################################
 function checkout_code(){
 	echo "正在从资源库[ $repository_url ]检出代码"
@@ -161,7 +162,7 @@ function checkout_code(){
 }
 
 ##############################################################################
-###			maven clean
+###	   maven clean
 ##############################################################################
 function clear_project(){
 	echo "${maven_shell} clean"
@@ -170,7 +171,7 @@ function clear_project(){
 }
 
 ##############################################################################
-###			编译打包
+###	   编译打包
 ##############################################################################
 function package(){
 	if [[ "${profile}" = "" ]]; then
@@ -184,7 +185,7 @@ function package(){
 }
 
 ##############################################################################
-###			检查war是否已存在，不存在退出 返回值 0-存在，1-不存在
+###    检查war是否已存在，不存在退出 返回值 0-存在，1-不存在
 ##############################################################################
 function check_war(){
 	if [ -e "$war_path" ]; then
@@ -195,7 +196,7 @@ function check_war(){
 }
 
 ##############################################################################
-###			本地拷贝
+###    本地拷贝
 ##############################################################################
 function local_copy(){
 	# echo "进入war包目录：$sub_project_path/target"
@@ -205,7 +206,7 @@ function local_copy(){
 }
 
 ##############################################################################
-###			远程拷贝
+###	   远程拷贝
 ##############################################################################
 function remote_copy(){
 	# echo "Param: remote_user = $remote_user" 
@@ -220,7 +221,7 @@ function remote_copy(){
 }
 
 ##############################################################################
-###			重启远程服务器
+###	   重启远程服务器
 ##############################################################################
 function restart_remote_server() {
     # echo "ssh -t -T -p $remote_port $remote_user@$remote_ip nohup $remote_shell_dir/restart.sh &"
@@ -237,7 +238,15 @@ function restart_remote_server() {
 }
 
 ##############################################################################
-###			重启本地服务器
+###	   回滚到某个版本
+##############################################################################
+function rollback_backup_version() {
+    echo "回滚中..."
+	ssh -t -T -p $remote_port $remote_user@$remote_ip "nohup $remote_shell_dir/restart.sh ${backup_version} &"
+}
+
+##############################################################################
+###	   重启本地服务器
 ##############################################################################
 function restart_local_server() {
 	cd "$server_path"
@@ -249,7 +258,7 @@ function restart_local_server() {
 }
 
 ##############################################################################
-###				发布流程 return 0 正常 return 1 不正常
+###	   发布流程 return 0 正常 return 1 不正常
 ##############################################################################
 function deploy_flow(){
 
@@ -296,14 +305,21 @@ function deploy_flow(){
 }
 
 ##############################################################################
-###				检查入参是否是数字
+###	   检查入参是否是数字 如果输出是空那么就证明是数字
 ##############################################################################
 function check_num(){
 	echo $1 | sed 's/[0-9]//g'
 }
 
 ##############################################################################
-###				输出参数详情
+###	   检查版本号格式 版本号格式为${war_name}_20170415211120
+##############################################################################
+function check_version(){
+	echo $1 | sed 's/_//' | sed 's/[0-9]//g'
+}
+
+##############################################################################
+###	   输出参数详情
 ##############################################################################
 function echo_params(){
 
@@ -336,9 +352,10 @@ function echo_params(){
 	echo "Param: dirct_upload = $dirct_upload" 
 	echo "Param: clean_project = $clean_project" 
 	echo "Param: show_help_flag = $show_help_flag" 
-	echo "Param: maven_shell = $maven_shell" 
-	echo "Param: remote_server_path = $remote_server_path" 
-	echo "Param: remote_backup_path = $remote_backup_path" 
+	echo "Param: maven_shell = $maven_shell"
+	echo "Param: remote_server_path = $remote_server_path"
+	echo "Param: remote_backup_path = $remote_backup_path"
+	echo "Param: backup_version = $backup_version"
 	echo "Param: remote_user = $remote_user" 
 	echo "Param: remote_ip = $remote_ip" 
 	echo "Param: remote_port = $remote_port" 
@@ -390,10 +407,12 @@ remote_pwd=""
 remote_backup_path=""
 #远程服务器上备份历史
 remote_backup_history=""
+#备份版本号
+backup_version=""
 
 
 ##############################################################################
-###				参数处理
+###    参数预处理
 ##############################################################################
 
 # 命令及参数显示
@@ -416,9 +435,13 @@ count=1
 while [ $# -ge 1 ];do
 	# echo "Current param: $1"
 	numcheck=$(check_num $1)
+	versioncheck=$(check_version $1)
 	if [[ "$numcheck" = "" ]]; then #如果参数为数字，则表示代表服务器的ip标识
 		server_flag=$1
 		# echo "handle server_flag : $server_flag"
+	elif [[ "$versioncheck" = "${war_name%.*}" ]]; then
+		backup_version=$1
+		# echo "handle backup_version : $backup_version"
 	elif [[ "$1" = "-du" ]]; then
 		dirct_upload="-du"
 		# echo "handle dirct_upload : $dirct_upload"
@@ -437,6 +460,9 @@ while [ $# -ge 1 ];do
 	elif [[ "$1" = "-his" ]]; then #查看历史
 		remote_backup_history="-his"
 		# echo "handle remote_backup_history : $remote_backup_history"
+	elif [[ "$1" = "-rb" ]]; then #回滚备份
+		remote_rollback="-rb"
+		# echo "handle remote_rollback : $remote_rollback"
 	fi
     # echo "参数序号： $count = $1"
     let count=count+1
@@ -486,13 +512,14 @@ else
 fi
 
 #debug时查看参数输出
-# echo_params
+echo_params
 
 if [[ "$clean_project" = "-c" ]]; then
 	echo "工程clean开始，进入工程目录 $parent_project_path"
 	cd "$parent_project_path"
 	#如果是clean工程命令，执行完直接退出
 	clear_project
+	echo "工程clean结束"
 	exit 0
 elif [[ "$show_help_flag" = "-h" ]]; then
 	#如果是help命令，显示帮助直接退出
@@ -502,10 +529,19 @@ elif [[ "$remote_backup_history" = "-his" ]]; then
 	#显示备份历史
 	show_deploy_history
 	exit 0
+elif [[ "$remote_rollback" = "-rb" ]]; then
+	if [[ "$backup_version" = "" ]]; then
+		echo "backup_version没有指定，请指定后再执行"
+		exit 0
+	fi
+	#回滚
+	rollback_backup_version
+	exit 0
 else
 	echo "工程自动化构建开始，进入工程目录 $parent_project_path"
 	cd "$parent_project_path"
 	#其他情况执行发布流程
 	deploy_flow
+	echo "工程自动化构建结束"
+	exit 0
 fi
-echo "工程自动化构建结束"

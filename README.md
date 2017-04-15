@@ -12,6 +12,7 @@
 * 支持windows（需要安装Git客户端）、linux、mac系统
 * 自动备份功能，默认路径为tomcat目录的backup，开关可控
 * 查看服务器上备份历史
+* 自动回滚到指定版本功能
 
 你可以用它来发布代码到你自己的阿里云。在项目组内推广后备受好评，谁用谁知道。
 
@@ -37,25 +38,28 @@
 usage: atb [Options]
 
 Options：
- -c                              clean 工程
- -du  [ -l ]                     跳过编译步骤直接上传已存在war包到本地服务器
- -du -r <server_flag>            跳过编译步骤直接上传已存在war包到指定的远程服务器
- -h                              帮助
- -l                              自动编译打包本地部署
- -r <server_flag>                自动编译打包远程部署到指定的远程服务器
- -his -r <server_flag>           查看指定的远程服务器上备份详情"
+ -c                                        clean 工程
+ -du [ -l ]                                直接上传已存在war包到本地服务器
+ -du -r <server_flag>                      直接上传已存在war包到指定的远程服务器
+ -h                                        帮助
+ -l                                        自动编译打包本地部署
+ -r <server_flag>                          自动编译打包远程部署到指定的远程服务器
+ -his -r <server_flag>                     查看指定的远程服务器上备份详情"
+ -r <server_flag> -rb <backup_version>     回滚当前版本到backup_version指定的版本"
 
 ```
 
 ```
  Options说明
- c           -- clean            来自mvn clean
- du          -- direct upload    直接上传 已经打过包不需要重新打包的情况
- h           -- help             帮助
- l           -- local            本地
- r           -- remote           远程
- his         -- history          历史
- server_flag -- 服务器标识         用于标识上传到哪一台远程服务器
+ c              -- clean           来自mvn clean
+ du             -- direct upload   已有war包，直接上传；没有war包，重新打包上传 
+ h              -- help            帮助
+ l              -- local           本地
+ r              -- remote          远程
+ his            -- history         备份历史
+ server_flag    -- 服务器标识        用于标识上传到哪一台远程服务器
+ rb             -- rollback        回滚命令
+ backup_version -- 备份版本号        与rb配合使用 用于指定回滚到的版本
 
 ```
 
@@ -64,6 +68,9 @@ Options：
     `atb.sh -du -r` war包已存在的情况下直接发布war包到远程服务器，不存在重新打包再发布
     `atb.sh` 本地发布 等同于 `atb.sh -l`
     `atb.sh -r 244` 如果你的remote_server_flags中包含244 那么就会发布到244所代表的机器上
+    `atb.sh -his -r 244` 查看244上备份历史
+    `atb.sh -r 244 -rb maiev_20170415211120` 244机器上回滚当前版本到2017-04-15 21:11:20的版本
+
 ```
 
 ## 视频演示
@@ -165,9 +172,9 @@ Options：
 * 微信：h574311651
 
 ## TODO事项
-* 增加自动备份功能，但只保留最近几次发布的版本
-* 增加回滚到某一版本功能
+* 增加通过配置指定最多保存的备份数功能
 * 考虑怎么让配置更加灵活，不局限于maven的工程结构
+* 考虑对Mysql数据库升级与回退的支持 
 
 ## 需求征集
 如果你们有任何好的想法和需求都可以告诉我，我来完善。
