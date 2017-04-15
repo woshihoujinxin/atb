@@ -41,17 +41,20 @@ Options：
  -h                              帮助
  -l                              自动编译打包本地部署
  -r <server_flag>                自动编译打包远程部署到指定的远程服务器
-    
+ -his -r <server_flag>           查看指定的远程服务器上备份详情"
+
 ```
 
 ```
  Options说明
- c  -- clean 来自mvn clean
- du -- direct upload （My Poor Chinglish）直接上传 已经打过包不需要重新打包的情况
- h  -- help  帮助
- l  -- local 本地
- r  -- remote 远程
- <server_flag>  远程server_flags用于标识上传到那一台远程服务器
+ c           -- clean            来自mvn clean
+ du          -- direct upload    直接上传 已经打过包不需要重新打包的情况
+ h           -- help             帮助
+ l           -- local            本地
+ r           -- remote           远程
+ his         -- history          历史
+ server_flag -- 服务器标识         用于标识上传到哪一台远程服务器
+
 ```
 
 ## 示例

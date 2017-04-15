@@ -23,6 +23,7 @@ function show_help(){
 	echo " -h                              帮助"
 	echo " -l                              自动编译打包本地部署"
 	echo " -r <server_flag>                自动编译打包远程部署到指定的远程服务器"
+	echo " -his -r <server_flag>           查看指定的远程服务器上备份历史"
 }
 
 ##############################################################################
@@ -62,6 +63,8 @@ war_sub_project_name=""
 war_name=""
 #远程重启shell目录 将restart脚本放到远程服务器指定的目录下，即可远程重启tomcat
 remote_shell_dir=""
+#远程服务器上备份存储路径
+remote_backup_dir=""
 #项目git地址
 repository_url=""
 #本地tocmat进程唯一筛选条件，本地多实例部署时根据这一个条件杀死指定进程
@@ -70,7 +73,7 @@ local_tomcat_process_name=""
 ##############################################################################
 ###			打印配置参数
 ##############################################################################
-function printConfigParam(){
+function print_config_param(){
 	echo "config Param: remote_server_paths = ${config_remote_server_paths}"
 	echo "config Param: remote_users = ${config_remote_users}"
 	echo "config Param: remote_ips = ${config_remote_ips}"
@@ -87,6 +90,7 @@ function printConfigParam(){
 	echo "config Param: war_sub_project_name = ${config_war_sub_project_name}"
 	echo "config Param: war_name = ${config_war_name}"
 	echo "config Param: remote_shell_dir = ${config_remote_shell_dir}"
+	echo "config Param: remote_backup_dir = ${config_remote_backup_dir}"
 	echo "config Param: repository_url = ${config_repository_url}"
 	echo "config Param: local_tomcat_process_name = ${config_local_tomcat_process_name}"
 	echo "#################读取配置文件结束#################"
@@ -102,7 +106,7 @@ function read_conf(){
     	eval "$line"  
 	done < ~/config
 
-	printConfigParam
+	print_config_param
 
 	remote_server_paths=${config_remote_server_paths}
 	remote_users=${config_remote_users}
@@ -120,9 +124,19 @@ function read_conf(){
 	war_sub_project_name=${config_war_sub_project_name}
 	war_name=${config_war_name}
 	remote_shell_dir=${config_remote_shell_dir}
+	remote_backup_dir=${config_remote_backup_dir}
 	repository_url=${config_repository_url}
 	local_tomcat_process_name=${config_local_tomcat_process_name}
 	return 0
+}
+
+##############################################################################
+###			查看历史版本
+##############################################################################
+function show_deploy_history(){
+	echo "显示发布历史"
+	echo ssh -t -T -p $remote_port $remote_user@$remote_ip "cd ${remote_backup_dir} && ls"
+	ssh -t -T -p $remote_port $remote_user@$remote_ip "cd ${remote_backup_dir} && ls"
 }
 
 ##############################################################################
@@ -182,16 +196,14 @@ function local_copy(){
 ###			远程拷贝
 ##############################################################################
 function remote_copy(){
+	# echo "Param: remote_user = $remote_user" 
+	# echo "Param: remote_ip = $remote_ip" 
+	# echo "Param: remote_port = $remote_port" 
+	# echo "Param: remote_pwd = $remote_pwd" 
 	echo "进入war包目录：$sub_project_path/target"
-	echo "开始传输war包到远程服务器目录：$server_path/webapps"
-	echo "Param: remote_user = $remote_user" 
-	echo "Param: remote_ip = $remote_ip" 
-	echo "Param: remote_port = $remote_port" 
-	echo "Param: remote_pwd = $remote_pwd" 
-	#方便拷贝密码
-	echo "密码：$remote_pwd"
 	cd "$sub_project_path/target"
-	echo scp $war_name "$remote_user@$remote_ip:$server_path/webapps"
+	#打印密码方便拷贝
+	echo "开始传输 [ $war_name ] 到 $remote_user@$remote_ip:$server_path/webapps 密码：$remote_pwd"
 	scp $war_name "$remote_user@$remote_ip:$server_path/webapps"
 }
 
@@ -298,6 +310,7 @@ function echo_params(){
 	echo "Param: war_sub_project_name = $war_sub_project_name"
 	echo "Param: war_name = $war_name"
 	echo "Param: remote_shell_dir = $remote_shell_dir"
+	echo "Param: remote_backup_dir = ${config_remote_backup_dir}"
 	echo "Param: repository_url = $repository_url"
 	echo "Param: parent_project_path = $parent_project_path"
 	echo "Param: sub_project_path = $sub_project_path"	
@@ -359,6 +372,9 @@ remote_port=""
 #远程服务器密码 可以不设置
 remote_pwd=""
 
+#远程服务器上备份历史
+remote_backup_history=""
+
 
 ##############################################################################
 ###				参数处理
@@ -402,6 +418,9 @@ while [ $# -ge 1 ];do
 	elif [[ "$1" = "-c" ]]; then #-r和-l同时存在取最后一个
 		clean_project="-c"
 		echo "handle clean_project : $clean_project"
+	elif [[ "$1" = "-his" ]]; then #查看历史
+		remote_backup_history="-his"
+		echo "handle remote_backup_history : $remote_backup_history"
 	fi
     # echo "参数序号： $count = $1"
     let count=count+1
@@ -461,6 +480,10 @@ if [[ "$clean_project" = "-c" ]]; then
 elif [[ "$show_help_flag" = "-h" ]]; then
 	#如果是help命令，显示帮助直接退出
 	show_help
+	exit 0
+elif [[ "$remote_backup_history" = "-his" ]]; then
+	#显示发布历史
+	show_deploy_history
 	exit 0
 else
 	echo "工程自动化构建开始，进入工程目录 $parent_project_path"
