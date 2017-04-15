@@ -86,7 +86,7 @@ Options：
 * 服务器上备份存储目录 如果你想设置成其他位置，记得修改atb.sh中remote_backup_path的取值逻辑，让最终的结果等于你设置的路径
 
     `backup_path="${server_path}/backup"`
-* 备份功能开关 [ on| off ] 
+* 备份功能开关 [ on | off ] 
 
     `backup_switch="on"`
 
