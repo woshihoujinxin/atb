@@ -143,6 +143,9 @@ Options：
 * 远程重启shell目录 将restart脚本放到远程服务器指定的目录下，即可远程重启tomcat
     
     `config_remote_shell_dir="/home/product"`
+* 远程备份存储目录
+
+    `config_remote_backup_dir="/home/product/backup"`
 * 项目git或svn地址
     
     `config_repository_url="svn://192.168.50.27/micro_crawler/Develop/projects/trunk/TaskCenter"`
