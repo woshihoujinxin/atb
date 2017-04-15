@@ -10,6 +10,22 @@
 ##############################################################################
 
 ##############################################################################
+###			打印 banner
+##############################################################################
+function show_banner(){
+	echo "##################################################################################################"
+	echo "#                                                                                                #"
+	echo "#   █████╗ ████████╗██████╗     ██████╗ ██╗   ██╗         ██╗██╗███╗   ██╗██╗  ██╗██╗███╗   ██╗  #"
+	echo "#  ██╔══██╗╚══██╔══╝██╔══██╗    ██╔══██╗╚██╗ ██╔╝         ██║██║████╗  ██║╚██╗██╔╝██║████╗  ██║  #"
+	echo "#  ███████║   ██║   ██████╔╝    ██████╔╝ ╚████╔╝          ██║██║██╔██╗ ██║ ╚███╔╝ ██║██╔██╗ ██║  #"
+	echo "#  ██╔══██║   ██║   ██╔══██╗    ██╔══██╗  ╚██╔╝      ██   ██║██║██║╚██╗██║ ██╔██╗ ██║██║╚██╗██║  #"
+	echo "#  ██║  ██║   ██║   ██████╔╝    ██████╔╝   ██║       ╚█████╔╝██║██║ ╚████║██╔╝ ██╗██║██║ ╚████║  #"
+	echo "#  ╚═╝  ╚═╝   ╚═╝   ╚═════╝     ╚═════╝    ╚═╝        ╚════╝ ╚═╝╚═╝  ╚═══╝╚═╝  ╚═╝╚═╝╚═╝  ╚═══╝  #"                                                                                          
+	echo "#                                                                                                #"
+	echo "##################################################################################################"
+}
+
+##############################################################################
 ###			显示帮助
 ##############################################################################
 function show_help(){
@@ -63,8 +79,6 @@ war_sub_project_name=""
 war_name=""
 #远程重启shell目录 将restart脚本放到远程服务器指定的目录下，即可远程重启tomcat
 remote_shell_dir=""
-#远程服务器上备份存储路径
-remote_backup_dir=""
 #项目git地址
 repository_url=""
 #本地tocmat进程唯一筛选条件，本地多实例部署时根据这一个条件杀死指定进程
@@ -90,10 +104,8 @@ function print_config_param(){
 	echo "config Param: war_sub_project_name = ${config_war_sub_project_name}"
 	echo "config Param: war_name = ${config_war_name}"
 	echo "config Param: remote_shell_dir = ${config_remote_shell_dir}"
-	echo "config Param: remote_backup_dir = ${config_remote_backup_dir}"
 	echo "config Param: repository_url = ${config_repository_url}"
 	echo "config Param: local_tomcat_process_name = ${config_local_tomcat_process_name}"
-	echo "#################读取配置文件结束#################"
 	echo ""
 }
 
@@ -101,12 +113,12 @@ function print_config_param(){
 ###			读取配置文件
 ##############################################################################
 function read_conf(){
-	echo "#################读取配置文件开始#################"
+	# echo "#################读取配置文件开始#################"
 	while read -r line;do  
     	eval "$line"  
 	done < ~/config
-
-	print_config_param
+	# echo "#################读取配置文件结束#################"
+	# print_config_param
 
 	remote_server_paths=${config_remote_server_paths}
 	remote_users=${config_remote_users}
@@ -124,7 +136,6 @@ function read_conf(){
 	war_sub_project_name=${config_war_sub_project_name}
 	war_name=${config_war_name}
 	remote_shell_dir=${config_remote_shell_dir}
-	remote_backup_dir=${config_remote_backup_dir}
 	repository_url=${config_repository_url}
 	local_tomcat_process_name=${config_local_tomcat_process_name}
 	return 0
@@ -134,9 +145,10 @@ function read_conf(){
 ###			查看历史版本
 ##############################################################################
 function show_deploy_history(){
-	echo "显示发布历史"
-	echo ssh -t -T -p $remote_port $remote_user@$remote_ip "cd ${remote_backup_dir} && ls"
-	ssh -t -T -p $remote_port $remote_user@$remote_ip "cd ${remote_backup_dir} && ls"
+	echo "↓                                         备份列表                                               ↓"
+	# echo ssh -t -T -p $remote_port $remote_user@$remote_ip "cd ${remote_backup_path} && ls -l"
+	ssh -t -T -p $remote_port $remote_user@$remote_ip "cd ${remote_backup_path} && ls -lhG"
+	
 }
 
 ##############################################################################
@@ -220,7 +232,8 @@ function restart_remote_server() {
     #   	when implementing menu services.  
     #   	Multiple -t options force tty allocation, even if ssh has no local tty.
     # -p 指定端口号
-	ssh -t -T -p $remote_port $remote_user@$remote_ip "nohup $remote_shell_dir/restart.sh &"
+    echo "重启服务中..."
+	ssh -t -T -p $remote_port $remote_user@$remote_ip "nohup $remote_shell_dir/restart.sh ${war_name} &"
 }
 
 ##############################################################################
@@ -310,7 +323,6 @@ function echo_params(){
 	echo "Param: war_sub_project_name = $war_sub_project_name"
 	echo "Param: war_name = $war_name"
 	echo "Param: remote_shell_dir = $remote_shell_dir"
-	echo "Param: remote_backup_dir = ${config_remote_backup_dir}"
 	echo "Param: repository_url = $repository_url"
 	echo "Param: parent_project_path = $parent_project_path"
 	echo "Param: sub_project_path = $sub_project_path"	
@@ -326,6 +338,7 @@ function echo_params(){
 	echo "Param: show_help_flag = $show_help_flag" 
 	echo "Param: maven_shell = $maven_shell" 
 	echo "Param: remote_server_path = $remote_server_path" 
+	echo "Param: remote_backup_path = $remote_backup_path" 
 	echo "Param: remote_user = $remote_user" 
 	echo "Param: remote_ip = $remote_ip" 
 	echo "Param: remote_port = $remote_port" 
@@ -333,6 +346,7 @@ function echo_params(){
 	echo ""
 }
 
+show_banner
 #读取配置文件
 read_conf
 
@@ -372,6 +386,8 @@ remote_port=""
 #远程服务器密码 可以不设置
 remote_pwd=""
 
+#远程服务器上备份存储路径 默认为tomcat目录下的backup
+remote_backup_path=""
 #远程服务器上备份历史
 remote_backup_history=""
 
@@ -380,47 +396,47 @@ remote_backup_history=""
 ###				参数处理
 ##############################################################################
 
-#命令及参数显示
-for i in "$*"; do
-    echo "Command: `basename $0`" $i "Param Count: $#"
-done
+# 命令及参数显示
+# for i in "$*"; do
+# 	echo "Command: `basename $0`" $i "Param Count: $#"
+# done
 
 #如果参数为0，各个参数取默认值
 if [[ $# -eq 0 ]]; then
 	dirct_upload=""
-	echo "handle dirct_upload : $dirct_upload"
+	# echo "handle dirct_upload : $dirct_upload"
 	local_or_remote="-l"
-	echo "handle local_or_remote : $local_or_remote"
+	# echo "handle local_or_remote : $local_or_remote"
 	clean_project=""
-	echo "handle clean_project : $clean_project"
+	# echo "handle clean_project : $clean_project"
 fi
 
 #如果参数大于等于1，通过循环处理参数
 count=1
 while [ $# -ge 1 ];do
-	echo "Current param: $1"
+	# echo "Current param: $1"
 	numcheck=$(check_num $1)
 	if [[ "$numcheck" = "" ]]; then #如果参数为数字，则表示代表服务器的ip标识
 		server_flag=$1
-		echo "handle server_flag : $server_flag"
+		# echo "handle server_flag : $server_flag"
 	elif [[ "$1" = "-du" ]]; then
 		dirct_upload="-du"
-		echo "handle dirct_upload : $dirct_upload"
+		# echo "handle dirct_upload : $dirct_upload"
 	elif [[ "$1" = "-h" ]]; then
 		show_help_flag="-h"
-		echo "handle show_help_flag : $show_help_flag"
+		# echo "handle show_help_flag : $show_help_flag"
 	elif [[ "$1" = "-r" ]]; then		
 		local_or_remote="-r"
-		echo "handle local_or_remote : $local_or_remote"
+		# echo "handle local_or_remote : $local_or_remote"
 	elif [[ "$1" = "-l" ]]; then #-r和-l同时存在取最后一个
 		local_or_remote="-l"
-		echo "handle local_or_remote : $local_or_remote"
+		# echo "handle local_or_remote : $local_or_remote"
 	elif [[ "$1" = "-c" ]]; then #-r和-l同时存在取最后一个
 		clean_project="-c"
-		echo "handle clean_project : $clean_project"
+		# echo "handle clean_project : $clean_project"
 	elif [[ "$1" = "-his" ]]; then #查看历史
 		remote_backup_history="-his"
-		echo "handle remote_backup_history : $remote_backup_history"
+		# echo "handle remote_backup_history : $remote_backup_history"
 	fi
     # echo "参数序号： $count = $1"
     let count=count+1
@@ -436,7 +452,7 @@ elif [[ "$local_or_remote" = "-r" ]]; then
 	sub_project_path="$parent_project_path/$war_sub_project_name"
 	war_path="$sub_project_path/target/$war_name"
 	if [[ "$server_flag" = "" ]]; then
-		echo "server_flag没有指定，结束"
+		echo "server_flag没有指定，请指定后再执行"
 		exit 0
 	fi
 
@@ -456,6 +472,7 @@ elif [[ "$local_or_remote" = "-r" ]]; then
 	remote_server_path="${remote_server_paths[$arr_index]}"
 
 	server_path="$remote_server_path"
+	remote_backup_path="${server_path}/backup"
 	profile="${remote_profiles[$arr_index]}"
 else
 	server_path="$local_server_path"
@@ -469,7 +486,7 @@ else
 fi
 
 #debug时查看参数输出
-echo_params
+# echo_params
 
 if [[ "$clean_project" = "-c" ]]; then
 	echo "工程clean开始，进入工程目录 $parent_project_path"
@@ -482,7 +499,7 @@ elif [[ "$show_help_flag" = "-h" ]]; then
 	show_help
 	exit 0
 elif [[ "$remote_backup_history" = "-his" ]]; then
-	#显示发布历史
+	#显示备份历史
 	show_deploy_history
 	exit 0
 else

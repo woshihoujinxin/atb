@@ -10,6 +10,8 @@
 * 自动重启远程或本地服务器
 * 自动查看启动日志
 * 支持windows（需要安装Git客户端）、linux、mac系统
+* 自动备份功能，默认路径为tomcat目录的backup，开关可控
+* 查看服务器上备份历史
 
 你可以用它来发布代码到你自己的阿里云。在项目组内推广后备受好评，谁用谁知道。
 
@@ -81,6 +83,12 @@ Options：
 * 服务器上tomcat进程标识 杀死进程用到 一般用tomcat根目录文件夹的名字就可以了
     
     `process_flag="apache-tomcat-8.5.9"`
+* 服务器上备份存储目录 如果你想设置成其他位置，记得修改atb.sh中remote_backup_path的取值逻辑，让最终的结果等于你设置的路径
+
+    `backup_path="${server_path}/backup"`
+* 备份功能开关 [ on| off ] 
+
+    `backup_switch="on"`
 
 ## 本地脚本配置参数
 `本地脚本配置需要修改config文件`
@@ -143,9 +151,6 @@ Options：
 * 远程重启shell目录 将restart脚本放到远程服务器指定的目录下，即可远程重启tomcat
     
     `config_remote_shell_dir="/home/product"`
-* 远程备份存储目录
-
-    `config_remote_backup_dir="/home/product/backup"`
 * 项目git或svn地址
     
     `config_repository_url="svn://192.168.50.27/micro_crawler/Develop/projects/trunk/TaskCenter"`

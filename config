@@ -47,7 +47,7 @@ config_war_name="maiev.war"
 config_remote_shell_dir="/home/product"
 
 #远程备份存储目录
-config_remote_backup_dir="/home/product/backup"
+config_remote_backup_dir="/home/product/installed/apache-tomcat-8.5.9/backup"
 
 #项目git地址
 config_repository_url="https://git.oschina.net/yangsj/maiev.git"
