@@ -25,4 +25,4 @@
     s/表达式/替换式/g --g表示全局替换 无g表示只替换一个
 ```
 
-[原文地址：](http://www.cnblogs.com/ggjucheng/archive/2013/01/13/2856901.html)
+[原文连接](http://www.cnblogs.com/ggjucheng/archive/2013/01/13/2856901.html)
