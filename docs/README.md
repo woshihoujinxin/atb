@@ -5,3 +5,5 @@
 * [Shell参考手册](https://tiswww.case.edu/php/chet/bash/bashref.html#Pipelines)
 * [Banner生成](http://patorjk.com/software/taag/#p=testall&f=Bulbhead&t=ATBSHELL)
 * [编写快速安全 Bash 脚本的建议](https://www.oschina.net/translate/bash-scripting-quirks-safety-tips)
+* [Linux命令搜索](http://linux-command.composer-proxy.org/c/find.html)
+* [Linux系统命令大全](http://man.linuxde.net/)
