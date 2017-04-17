@@ -74,7 +74,7 @@
 ```
 
 ## 动图演示
-* ![image](images/atb效果图.gif)
+![image](images/atb效果图.gif)
 
 ## 支持的操作系统
 * windows 通过git for windows执行可本地发布,远程发布未测试
