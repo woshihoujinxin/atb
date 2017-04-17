@@ -73,9 +73,7 @@
 
 ```
 
-## 视频演示
-* [远程发布](http://v.youku.com/v_show/id_XMjY5ODE5NDc4MA==.html?spm=a2hzp.8244740.userfeed.5!3~5~5~5!3~5~A)
-* [本地发布](http://v.youku.com/v_show/id_XMjY5ODE5NjkzMg==.html?spm=a2hzp.8244740.userfeed.5!2~5~5~5!3~5~A#paction)
+## 动图演示
 * ![image](images/atb效果图.gif)
 
 ## 支持的操作系统
