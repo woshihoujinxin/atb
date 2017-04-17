@@ -21,7 +21,7 @@
 ## 前置条件
 * 需要安装JDK并配置环境变量
 * 需要安装maven
-* 需要安装git或svn并配置到环境变量
+* 需要安装git或svn(windows下需安装[svn命令行工具](https://tortoisesvn.net/downloads.html))并配置到环境变量
 * 本地部署需要tomcat支持
 * 需要操作系统支持ssh命令，远程发布需要
 
@@ -77,7 +77,7 @@
 ![image](images/atb效果图.gif)
 
 ## 支持的操作系统
-* windows 通过git for windows执行可本地发布,远程发布未测试
+* windows 使用[Git for windows](https://git-for-windows.github.io/)的Git Bash执行脚本
 * linux
 * mac
 
