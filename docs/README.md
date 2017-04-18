@@ -7,3 +7,4 @@
 * [编写快速安全 Bash 脚本的建议](https://www.oschina.net/translate/bash-scripting-quirks-safety-tips)
 * [Linux命令搜索](http://linux-command.composer-proxy.org/c/find.html)
 * [Linux系统命令大全](http://man.linuxde.net/)
+* [如何查看远程机器上文件夹是否存在](http://www.4byte.cn/learning/120050/ru-he-jian-cha-wen-jian-shi-fou-cun-zai-yu-yuan-cheng-fu-wu-qi-shang.html)
