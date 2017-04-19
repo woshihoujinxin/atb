@@ -1,0 +1,43 @@
+#!/bin/bash
+
+function read_conf1(){
+        # echo "#################读取配置文件开始#################"
+        while read -r line;do
+	`eval $line`
+	
+        done < array
+        # echo "#################读取配置文件结束#################"
+	remote_server_paths=${config_remote_server_paths}
+	echo "config Param: remote_server_paths = ${config_remote_server_paths}"
+	return 0
+}
+# read_conf
+
+##############################################################################
+###    读取配置问文件 [配置文件路径+名称] [节点名] [键值]
+##############################################################################
+function read_ini() {
+ 	INIFILE=$1;	
+	SECTION=$2;	
+	ITEM=$3
+	# awk -F '=' '/\['$SECTION'\]/{a=1}a==1&&$1~/'$ITEM'/{ for (i=1; i<= split($2,array,","); i++) print array[i]" "}' $INIFILE
+	awk -F '=' '/\['$SECTION'\]/{a=1}a==1&&$1~/'$ITEM'/{ print $2}' $INIFILE
+}
+
+# 使用方法:
+# Net address
+_IP=( $( read_ini test.ini IP ip ) ) 
+echo ${_IP}
+# mail send 
+_mailList=( $( read_ini test.ini MAILLIST mail ) ) 
+echo ${_mailList}
+
+# ips  
+ips=$( read_ini conf.ini REMOTE config_remote_server_paths )
+echo ${ips[@]}
+_ips=( $( read_ini test.ini IP ips ) ) 
+echo ${_ips[@]}
+
+# ips1  
+_ips1=( $( read_ini test.ini IP ips1 ) ) 
+echo ${_ips1}

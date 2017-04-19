@@ -44,49 +44,7 @@ function show_help(){
 }
 
 ##############################################################################
-###    变量声明 var=value 等号必须前后紧挨着
-##############################################################################
-
-#以下参数代表服务器配置信息有多少机器配置多少个,这里的配置用于取值
-#远程服务器路径
-remote_server_paths=()
-#远程服务器用户
-remote_users=()
-#远程服务器ip
-remote_ips=()
-#远程服务器端口
-remote_ports=()
-#远程服务器密码 可以不设置
-remote_pwds=()
-#maven打包用的远程profiles
-remote_profiles=()
-#远程server_flags
-remote_server_flags=()
-#本地profile
-local_profile=""
-#本地tomcat webapps目录
-local_server_path=""
-#项目远程build路径
-remote_project_basepath=""
-#maven本地路径
-maven_home=""
-#项目本地路径
-local_project_basepath=""
-#项目名称
-project_name=""
-#war包所在的maven子模块,只支持一个war包的工程 为空时代表在父及目录下的target中存在war包
-war_sub_project_name=""
-#war包名
-war_name=""
-#远程重启shell目录 将restart脚本放到远程服务器指定的目录下，即可远程重启tomcat
-remote_shell_dir=""
-#项目git地址
-repository_url=""
-#本地tocmat进程唯一筛选条件，本地多实例部署时根据这一个条件杀死指定进程
-local_tomcat_process_name=""
-
-##############################################################################
-###    打印配置参数
+###	    打印配置参数
 ##############################################################################
 function print_config_param(){
 	echo "config Param: remote_server_paths = ${config_remote_server_paths}"
@@ -111,39 +69,17 @@ function print_config_param(){
 }
 
 ##############################################################################
-###    读取配置文件
+###    读取配置文件 [配置文件路径+名称] [节点名] [键值]
 ##############################################################################
-function read_conf(){
-	# echo "#################读取配置文件开始#################"
-	while read -r line;do  
-    	eval "$line"  
-	done < ~/config
-	# echo "#################读取配置文件结束#################"
-	# print_config_param
-
-	remote_server_paths=${config_remote_server_paths}
-	remote_users=${config_remote_users}
-	remote_ips=${config_remote_ips}
-	remote_ports=${config_remote_ports}
-	remote_pwds=${config_remote_pwds}
-	remote_profiles=${config_remote_profiles}
-	remote_server_flags=${config_remote_server_flags}
-	local_profile=${config_local_profile}
-	local_server_path=${config_local_server_path}
-	remote_project_basepath=${config_remote_project_basepath}
-	maven_home=${config_maven_home}
-	local_project_basepath=${config_local_project_basepath}
-	project_name=${config_project_name}
-	war_sub_project_name=${config_war_sub_project_name}
-	war_name=${config_war_name}
-	remote_shell_dir=${config_remote_shell_dir}
-	repository_url=${config_repository_url}
-	local_tomcat_process_name=${config_local_tomcat_process_name}
-	return 0
+function read_ini() {
+ 	INI_FILE=$1;	
+	SECTION=$2;	
+	ITEM=$3
+	awk -F '=' '/\['$SECTION'\]/{a=1}a==1&&$1~/'$ITEM'/{ for (i=1; i<= split($2,array,","); i++) print array[i]" "}' $INI_FILE
 }
 
 ##############################################################################
-###	   查看历史版本
+###	   查看发布历史
 ##############################################################################
 function show_deploy_history(){
 	echo "↓                                         备份列表                                               ↓"
@@ -322,50 +258,111 @@ function check_version(){
 ###	   输出参数详情
 ##############################################################################
 function echo_params(){
-
-	echo "Param: remote_server_paths = $remote_server_paths"
-	echo "Param: remote_users = $remote_users"
-	echo "Param: remote_ips = $remote_ips"
-	echo "Param: remote_ports = $remote_ports"
-	echo "Param: remote_pwds = $remote_pwds"
-	echo "Param: remote_profiles = $remote_profiles"
-	echo "Param: remote_server_flags = $remote_server_flags"
-	echo "Param: local_profile = $local_profile"
-	echo "Param: local_server_path = $local_server_path"
-	echo "Param: remote_project_basepath = $remote_project_basepath"
-	echo "Param: maven_home = $maven_home"
-	echo "Param: local_project_basepath = $local_project_basepath"
-	echo "Param: project_name = $project_name"
-	echo "Param: war_sub_project_name = $war_sub_project_name"
-	echo "Param: war_name = $war_name"
-	echo "Param: remote_shell_dir = $remote_shell_dir"
-	echo "Param: repository_url = $repository_url"
-	echo "Param: parent_project_path = $parent_project_path"
-	echo "Param: sub_project_path = $sub_project_path"	
-	echo "Param: war_path = $war_path"
-	echo "Param: local_tomcat_process_name = $local_tomcat_process_name"
-
-	echo "Param: profile = $profile"
-	echo "Param: server_flag = $server_flag" 
-	echo "Param: server_path = $server_path" 
-	echo "Param: local_or_remote = $local_or_remote" 
-	echo "Param: dirct_upload = $dirct_upload" 
-	echo "Param: clean_project = $clean_project" 
-	echo "Param: show_help_flag = $show_help_flag" 
-	echo "Param: maven_shell = $maven_shell"
-	echo "Param: remote_server_path = $remote_server_path"
-	echo "Param: remote_backup_path = $remote_backup_path"
-	echo "Param: backup_version = $backup_version"
-	echo "Param: remote_user = $remote_user" 
-	echo "Param: remote_ip = $remote_ip" 
-	echo "Param: remote_port = $remote_port" 
-	echo "Param: remote_pwd = $remote_pwd" 
+	echo "[info] "
+	echo "[info] REMOTE SERVER INFO"
+	echo "[info] ------------------------------------------------------------------------"
+	echo "[info] remote_server_paths = ${remote_server_paths[@]}"
+	echo "[info] remote_users = ${remote_users[@]}"
+	echo "[info] remote_ips = ${remote_ips[@]}"
+	echo "[info] remote_ports = ${remote_ports[@]}"
+	echo "[info] remote_pwds = ${remote_pwds[@]}"
+	echo "[info] remote_profiles = ${remote_profiles[@]}"
+	echo "[info] remote_server_flags = ${remote_server_flags[@]}"
+	echo "[info] remote_shell_dir = $remote_shell_dir"
+	echo "[info] ------------------------------------------------------------------------"
+	echo "[info] LOCAL SERVER INFO"
+	echo "[info] ------------------------------------------------------------------------"
+	echo "[info] local_server_path = $local_server_path"
+	echo "[info] local_tomcat_process_name = $local_tomcat_process_name"
+	echo "[info] ------------------------------------------------------------------------"
+	echo "[info] PROJECT INFO"
+	echo "[info] ------------------------------------------------------------------------"
+	echo "[info] remote_project_basepath = $remote_project_basepath"
+	echo "[info] local_project_basepath = $local_project_basepath"
+	echo "[info] project_name = $project_name"
+	echo "[info] war_sub_project_name = $war_sub_project_name"
+	echo "[info] war_name = $war_name"
+	echo "[info] local_profile = $local_profile"
+	echo "[info] ------------------------------------------------------------------------"
+	echo "[info] MAVEN INFO"
+	echo "[info] ------------------------------------------------------------------------"
+	echo "[info] maven_home = $maven_home"
+	echo "[info] ------------------------------------------------------------------------"
+	echo "[info] REPOSITORY INFO"
+	echo "[info] ------------------------------------------------------------------------"
+	echo "[info] repository_url = $repository_url"
+	echo "[info] ------------------------------------------------------------------------"
+	echo "[info] BUILD INFO"
+	echo "[info] ------------------------------------------------------------------------"
+	echo "[info] parent_project_path = $parent_project_path"
+	echo "[info] sub_project_path = $sub_project_path"	
+	echo "[info] war_path = $war_path"
+	echo "[info] profile = $profile"
+	echo "[info] server_flag = $server_flag" 
+	echo "[info] server_path = $server_path" 
+	echo "[info] local_or_remote = $local_or_remote" 
+	echo "[info] dirct_upload = $dirct_upload" 
+	echo "[info] clean_project = $clean_project" 
+	echo "[info] show_help_flag = $show_help_flag" 
+	echo "[info] maven_shell = $maven_shell"
+	echo "[info] backup_version = $backup_version"
+	echo "[info] remote_server_path = $remote_server_path"
+	echo "[info] remote_backup_path = $remote_backup_path"
+	echo "[info] remote_user = $remote_user" 
+	echo "[info] remote_ip = $remote_ip" 
+	echo "[info] remote_port = $remote_port" 
+	echo "[info] remote_pwd = $remote_pwd" 
+	echo "[info] ------------------------------------------------------------------------"
 	echo ""
 }
 
-show_banner
-#读取配置文件
-read_conf
+##############################################################################
+###    变量声明 var=value 等号必须前后紧挨着
+##############################################################################
+#配置文件路径名称
+conf_filename=~/conf.ini
+#以下参数代表服务器配置信息有多少机器配置多少个,这里的配置用于取值
+#远程服务器路径
+remote_server_paths=( $( read_ini ${conf_filename} remote-server config_remote_server_paths ) ) 
+#远程服务器用户
+remote_users=( $( read_ini ${conf_filename} remote-server config_remote_users ) ) 
+#远程服务器ip
+remote_ips=( $( read_ini ${conf_filename} remote-server config_remote_ips ) ) 
+#远程服务器端口
+remote_ports=( $( read_ini ${conf_filename} remote-server config_remote_ports ) ) 
+#远程服务器密码 可以不设置
+remote_pwds=( $( read_ini ${conf_filename} remote-server config_remote_pwds ) ) 
+#maven打包用的远程profiles
+remote_profiles=( $( read_ini ${conf_filename} remote-server config_remote_profiles ) ) 
+#远程server_flags
+remote_server_flags=( $( read_ini ${conf_filename} remote-server config_remote_server_flags ) )  
+#远程重启shell目录 将restart脚本放到远程服务器指定的目录下，即可远程重启tomcat
+remote_shell_dir=( $( read_ini ${conf_filename} remote-server config_remote_shell_dir ) ) 
+
+#本地tomcat webapps目录
+local_server_path=( $( read_ini ${conf_filename} local-server config_local_server_path ) ) 
+#本地tocmat进程唯一筛选条件，本地多实例部署时根据这一个条件杀死指定进程
+local_tomcat_process_name=( $( read_ini ${conf_filename} local-server config_local_tomcat_process_name ) )
+
+#项目远程build路径
+remote_project_basepath=( $( read_ini ${conf_filename} project config_remote_project_basepath ) )
+#项目本地路径
+local_project_basepath=( $( read_ini ${conf_filename} project config_local_project_basepath ) )
+#项目名称
+project_name=( $( read_ini ${conf_filename} project config_project_name ) )
+#war包所在的maven子模块,只支持一个war包的工程 为空时代表在父及目录下的target中存在war包
+war_sub_project_name=( $( read_ini ${conf_filename} project config_war_sub_project_name ) )
+#本地profile
+local_profile=( $( read_ini ${conf_filename} project config_local_profile ) ) 
+#war包名
+war_name=( $( read_ini ${conf_filename} project config_war_name ) )
+
+#maven本地路径
+maven_home=( $( read_ini ${conf_filename} maven config_maven_home ) )
+
+#项目git地址
+repository_url=( $( read_ini ${conf_filename} repository config_repository_url ) )
+
 
 #父工程路径
 parent_project_path="$local_project_basepath/$project_name"
@@ -482,6 +479,13 @@ elif [[ "$local_or_remote" = "-r" ]]; then
 		exit 0
 	fi
 
+	if [[ "${remote_server_flags[@]}" =~ $server_flag ]]; then
+		#statements
+		echo "server_flag在配置中"
+	else
+		echo "server_flag不在配置中，请确定后再执行"
+		exit 0
+	fi
 	#远程服务器服务器配置信息控制
 	arr_index=0
 	for i in "${!remote_server_flags[@]}"; do
@@ -511,6 +515,7 @@ else
 	maven_shell="mvn"
 fi
 
+show_banner
 #debug时查看参数输出
 echo_params
 
