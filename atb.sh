@@ -44,38 +44,13 @@ function show_help(){
 }
 
 ##############################################################################
-###	    打印配置参数
-##############################################################################
-function print_config_param(){
-	echo "config Param: remote_server_paths = ${config_remote_server_paths}"
-	echo "config Param: remote_users = ${config_remote_users}"
-	echo "config Param: remote_ips = ${config_remote_ips}"
-	echo "config Param: remote_ports = ${config_remote_ports}"
-	echo "config Param: remote_pwds = ${config_remote_pwds}"
-	echo "config Param: remote_profiles = ${config_remote_profiles}"
-	echo "config Param: remote_server_flags = ${config_remote_server_flags}"
-	echo "config Param: local_profile = ${config_local_profile}"
-	echo "config Param: local_server_path = ${config_local_server_path}"
-	echo "config Param: remote_project_basepath = ${config_remote_project_basepath}"
-	echo "config Param: maven_home = ${config_maven_home}"
-	echo "config Param: local_project_basepath = ${config_local_project_basepath}"
-	echo "config Param: project_name = ${config_project_name}"
-	echo "config Param: war_sub_project_name = ${config_war_sub_project_name}"
-	echo "config Param: war_name = ${config_war_name}"
-	echo "config Param: remote_shell_dir = ${config_remote_shell_dir}"
-	echo "config Param: repository_url = ${config_repository_url}"
-	echo "config Param: local_tomcat_process_name = ${config_local_tomcat_process_name}"
-	echo ""
-}
-
-##############################################################################
 ###    读取配置文件 [配置文件路径+名称] [节点名] [键值]
 ##############################################################################
 function read_ini() {
- 	INI_FILE=$1;	
-	SECTION=$2;	
-	ITEM=$3
-	awk -F '=' '/\['$SECTION'\]/{a=1}a==1&&$1~/'$ITEM'/{ for (i=1; i<= split($2,array,","); i++) print array[i]" "}' $INI_FILE
+ 	ini_file=$1;	
+	section=$2;	
+	key=$3
+	awk -F '=' '/\['$section'\]/{a=1}a==1&&$1~/'$key'/{ for (i=1; i<= split($2,array,","); i++) print array[i]" "}' $ini_file
 }
 
 ##############################################################################
