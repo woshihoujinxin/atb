@@ -1,25 +1,15 @@
 #!/bin/bash
 #tomcat根目录
-server_path="/home/product/installed/apache-tomcat-8.5.9"
-#进程标志杀进程用的请保证唯一
-process_flag="apache-tomcat-8.5.9"
-#备份文件路径
-backup_path="${server_path}/backup"
-#备份功能开关 [ on| off ]
-backup_switch="on"
+server_path=$2
 
 ##############################################################################
-###    备份
+###    从备份文件夹拷贝最新版war包
 ##############################################################################
-function backup(){
-    if [[ ! -d "${backup_path}" ]]; then
-        mkdir -p ${backup_path}
-    fi
-    # 按日期备份
-	current_time=`date +%Y%m%d%H%M%S`
-	backup_filename=$1
-    echo "备份中 ${server_path}/webapps/${backup_filename} ${backup_path}/${backup_filename%.*}_${current_time}"
-    cp ${server_path}/webapps/${backup_filename} ${backup_path}/${backup_filename%.*}_${current_time}
+function deploy(){
+    echo "删除旧版[ ${server_path}/webapps/${1%.*}* ]"
+    #删除webapps下的war以及解压文件夹
+    rm -rf "${server_path}/webapps/${1%.*}*"
+    cp ${server_path}/backup/$(ls -rt|tail -1) ${server_path}/webapps/$1
 }
 
 ##############################################################################
@@ -38,7 +28,7 @@ function del_exception_version(){
 function rollback(){
     echo "还原版本：$1"
     filename=`echo $1 | sed 's/_//' | sed 's/[0-9]//g'`
-    cp ${backup_path}/$1 ${server_path}/webapps/${filename}.war
+    cp ${server_path}/backup/$1 ${server_path}/webapps/${filename}.war
 }
 
 ##############################################################################
@@ -46,14 +36,14 @@ function rollback(){
 ###        接受一个参数：格式为[ maiev.war | maiev_20170415211120 ] 
 ###        前者为备份用后者，后者回滚用
 ##############################################################################
-function rollback_or_backup(){
-        #参数为war包名称时 备份
+function rollback_or_deploy(){
+    # 参数为war包名称时 备份
 	# extension=${1##*.}
-	#echo "扩展名：${extension}"
-	if [[ "${1##*.}" == "war" && $backup_switch == "on" ]]; then
+	# echo "扩展名：${extension}"
+	if [[ "${1##*.}" == "war"  ]]; then
 	    #开始备份 将restart命令参数作为backup参数
-	    backup $1
-	else #其他情况为回滚
+	    deploy $1
+	else # 其他情况为回滚
 		del_exception_version $1
 		rollback $1
 	fi
@@ -63,19 +53,19 @@ function rollback_or_backup(){
 ###    启动
 ##############################################################################
 function tomcat_start(){
-        cd "$server_path"
-        ./bin/startup.sh
-        tail -f logs/catalina.out
+    cd "$server_path"
+    ./bin/startup.sh
+    tail -f logs/catalina.out
 }
 
 ##############################################################################
 ###    kill tomcat
 ##############################################################################
 function kill_tomcat(){
-        # kill tomcat process 
-        ps -ef | grep ${process_flag} | grep -v grep | awk '{print $2}' | sed -e "s/^/kill -9 /g" | sh -
+    # kill tomcat process awk和shell同时使用了$2那么在awk前需要将shell的$2改名
+    ps -ef | grep ${server_path##*/} | grep -v grep | rename=$2; awk '{print $2}' | sed -e "s/^/kill -9 /g" | sh -
+    echo "tomcat 进程已杀死"
 }
-
 
 ##############################################################################
 ###    主流程
@@ -84,7 +74,7 @@ function kill_tomcat(){
 kill_tomcat
 #备份或回滚
 if [[ "$1" != "" ]]; then
-	rollback_or_backup $1
+	rollback_or_deploy $1
 fi
 #启动tomcat
 tomcat_start

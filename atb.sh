@@ -69,7 +69,8 @@ function show_deploy_history(){
 ##############################################################################
 function checkout_code(){
 	echo "正在从资源库[ $repository_url ]检出代码"
-	git s; git pull;git sp
+	#字符串转命令通用写法
+	eval ${checkout_command[@]}
 	return 0
 }
 
@@ -118,18 +119,46 @@ function local_copy(){
 }
 
 ##############################################################################
-###	   远程拷贝
+###	   远程拷贝 先拷贝到备份文件夹，然后关闭tomcat，从备份文件中拷贝出最新版 重启tomcat
 ##############################################################################
 function remote_copy(){
 	# echo "Param: remote_user = $remote_user" 
 	# echo "Param: remote_ip = $remote_ip" 
 	# echo "Param: remote_port = $remote_port" 
 	# echo "Param: remote_pwd = $remote_pwd" 
-	echo "进入war包目录：$sub_project_path/target"
-	cd "$sub_project_path/target"
+	echo "进入war包目录：${sub_project_path}/target"
+	cd "${sub_project_path}/target"
+	
+	#检查服务器上备份文件夹是否存在
+	if ssh ${remote_user}@${remote_ip} test -d ${remote_backup_path}; then
+	    echo "[ ${remote_backup_path} ]已存在"
+	else 
+		echo "[ ${remote_backup_path} ]创建中"
+		ssh -t -T -p ${remote_port} ${remote_user}@${remote_ip} "mkdir -p ${remote_backup_path}"
+		echo "[ ${remote_backup_path} ]创建成功"
+	fi
+
+    #定义远程文件名称
+    remote_war_name=""
+    if [[ ${remote_backup_switch} == "on" ]]; then
+    	# 查看备份文件个数
+	    backup_file_num=$(ssh -t -T -p ${remote_port} ${remote_user}@${remote_ip} "cd ${remote_backup_path} && ls -l | grep "^-" | wc -l")
+	    if [[ "${backup_file_num}" -ge "${remote_max_backup_file_num}" ]]; then
+	        echo "备份分文件个数${backup_file_num} 最大备份文将个数${remote_max_backup_file_num}"
+	        echo "删除最早备份文件$(ssh -t -T -p ${remote_port} ${remote_user}@${remote_ip} "cd ${remote_backup_path} && ls -rt|head -1")"
+		    # 删除最早备份文件
+	        ssh -t -T -p ${remote_port} ${remote_user}@${remote_ip} "cd ${remote_backup_path} && ls -rt|head -1|xargs rm -rf" 
+	    fi
+	    # 按日期备份
+	    current_time=`date +%Y%m%d%H%M%S`
+	    remote_war_name=${war_name%.*}_${current_time}
+	else
+		remote_war_name=${war_name}
+    fi
+    
 	#打印密码方便拷贝
-	echo "开始传输 [ $war_name ] 到 $remote_user@$remote_ip:$server_path/webapps 密码：$remote_pwd"
-	scp $war_name "$remote_user@$remote_ip:$server_path/webapps"
+	echo "开始传输 [ ${war_name} ] 到 ${remote_user}@${remote_ip}:${remote_backup_path}/${remote_war_name} 密码：${remote_pwd}"
+	scp ${war_name} "${remote_user}@${remote_ip}:${remote_backup_path}/${remote_war_name}"
 }
 
 ##############################################################################
@@ -146,7 +175,7 @@ function restart_remote_server() {
     #   	Multiple -t options force tty allocation, even if ssh has no local tty.
     # -p 指定端口号
     echo "重启服务中..."
-	ssh -t -T -p $remote_port $remote_user@$remote_ip "nohup $remote_shell_dir/restart.sh ${war_name} &"
+	ssh -t -T -p $remote_port $remote_user@$remote_ip "nohup $remote_shell_dir/restart.sh ${war_name} ${remote_server_path}&"
 }
 
 ##############################################################################
@@ -154,7 +183,7 @@ function restart_remote_server() {
 ##############################################################################
 function rollback_backup_version() {
     echo "回滚中..."
-	ssh -t -T -p $remote_port $remote_user@$remote_ip "nohup $remote_shell_dir/restart.sh ${backup_version} &"
+	ssh -t -T -p $remote_port $remote_user@$remote_ip "nohup $remote_shell_dir/restart.sh ${backup_version} ${remote_server_path}&"
 }
 
 ##############################################################################
@@ -164,7 +193,7 @@ function restart_local_server() {
 	cd "$server_path"
 	# ./bin/shutdown.sh
 	# 根据程唯一筛选条件杀死进程
-	ps -ef | grep ${local_tomcat_process_name} | grep -v grep | awk '{print $2}'  | sed -e "s/^/kill -9 /g" | sh -
+	ps -ef | grep ${server_path##*/} | grep -v grep | awk '{print $2}'  | sed -e "s/^/kill -9 /g" | sh -
 	./bin/startup.sh
 	tail -f ./logs/catalina.out
 }
@@ -244,12 +273,13 @@ function echo_params(){
 	echo "[info] remote_pwds = ${remote_pwds[@]}"
 	echo "[info] remote_profiles = ${remote_profiles[@]}"
 	echo "[info] remote_server_flags = ${remote_server_flags[@]}"
-	echo "[info] remote_shell_dir = $remote_shell_dir"
+	echo "[info] remote_shell_dir = ${remote_shell_dir}"
+	echo "[info] remote_max_backup_file_num = ${remote_max_backup_file_num}"
+	echo "[info] remote_backup_switch = ${remote_backup_switch}"
 	echo "[info] ------------------------------------------------------------------------"
 	echo "[info] LOCAL SERVER INFO"
 	echo "[info] ------------------------------------------------------------------------"
 	echo "[info] local_server_path = $local_server_path"
-	echo "[info] local_tomcat_process_name = $local_tomcat_process_name"
 	echo "[info] ------------------------------------------------------------------------"
 	echo "[info] PROJECT INFO"
 	echo "[info] ------------------------------------------------------------------------"
@@ -259,6 +289,10 @@ function echo_params(){
 	echo "[info] war_sub_project_name = $war_sub_project_name"
 	echo "[info] war_name = $war_name"
 	echo "[info] local_profile = $local_profile"
+	echo "[info] ------------------------------------------------------------------------"
+	echo "[info] CHECKOUT_COMMAND INFO"
+	echo "[info] ------------------------------------------------------------------------"
+	echo "[info] checkout_command = ${checkout_command[@]}"
 	echo "[info] ------------------------------------------------------------------------"
 	echo "[info] MAVEN INFO"
 	echo "[info] ------------------------------------------------------------------------"
@@ -314,11 +348,13 @@ remote_profiles=( $( read_ini ${conf_filename} remote-server config_remote_profi
 remote_server_flags=( $( read_ini ${conf_filename} remote-server config_remote_server_flags ) )  
 #远程重启shell目录 将restart脚本放到远程服务器指定的目录下，即可远程重启tomcat
 remote_shell_dir=( $( read_ini ${conf_filename} remote-server config_remote_shell_dir ) ) 
+#服务器上最大备份文件数
+remote_max_backup_file_num=( $( read_ini ${conf_filename} remote-server config_remote_max_backup_file_num ) ) 
+#备份功能开关
+remote_backup_switch=( $( read_ini ${conf_filename} remote-server config_remote_backup_switch ) )
 
 #本地tomcat webapps目录
 local_server_path=( $( read_ini ${conf_filename} local-server config_local_server_path ) ) 
-#本地tocmat进程唯一筛选条件，本地多实例部署时根据这一个条件杀死指定进程
-local_tomcat_process_name=( $( read_ini ${conf_filename} local-server config_local_tomcat_process_name ) )
 
 #项目远程build路径
 remote_project_basepath=( $( read_ini ${conf_filename} project config_remote_project_basepath ) )
@@ -332,6 +368,9 @@ war_sub_project_name=( $( read_ini ${conf_filename} project config_war_sub_proje
 local_profile=( $( read_ini ${conf_filename} project config_local_profile ) ) 
 #war包名
 war_name=( $( read_ini ${conf_filename} project config_war_name ) )
+
+#代码检出命令
+checkout_command=( $( read_ini ${conf_filename} command config_checkout_command ) )
 
 #maven本地路径
 maven_home=( $( read_ini ${conf_filename} maven config_maven_home ) )
