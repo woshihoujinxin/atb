@@ -296,7 +296,7 @@ function echo_params(){
 ###    变量声明 var=value 等号必须前后紧挨着
 ##############################################################################
 #配置文件路径名称
-conf_filename=conf.ini
+conf_filename=~/conf.ini
 #以下参数代表服务器配置信息有多少机器配置多少个,这里的配置用于取值
 #远程服务器路径
 remote_server_paths=( $( read_ini ${conf_filename} remote-server config_remote_server_paths ) ) 
