@@ -29,7 +29,7 @@
 
 1. 将atb.sh放到本机任意目录下，然后将该目录路径设置到环境变量中
 2. 将conf.ini文件放到家目录下,即命令行执行`cd`所进入的目录
-3. 修改conf.ini文件中的配置项，参考[配置说明](配置说明.md)
+3. 修改conf.ini文件中的配置项，参考[配置说明](docs/配置说明.md)
 4. 将restart.sh放到服务器上指定目录，如：`/home/product`，在conf.ini中修改`config_remote_shell_dir=/home/product`
 5. 具体用法见下面帮助
 
