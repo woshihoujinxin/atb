@@ -9,7 +9,7 @@ function deploy(){
     echo "删除旧版[ ${server_path}/webapps/${1%.*}* ]"
     #删除webapps下的war以及解压文件夹
     rm -rf "${server_path}/webapps/${1%.*}*"
-    cp ${server_path}/backup/$(ls -rt|tail -1) ${server_path}/webapps/$1
+    cp ${server_path}/backup/$(cd ${server_path}/backup; ls -rt|tail -1) ${server_path}/webapps/$1
 }
 
 ##############################################################################
@@ -56,6 +56,7 @@ function tomcat_start(){
     cd "$server_path"
     ./bin/startup.sh
     tail -f logs/catalina.out
+    exit 0
 }
 
 ##############################################################################
@@ -63,7 +64,9 @@ function tomcat_start(){
 ##############################################################################
 function kill_tomcat(){
     # kill tomcat process awk和shell同时使用了$2那么在awk前需要将shell的$2改名
-    ps -ef | grep ${server_path##*/} | grep -v grep | rename=$2; awk '{print $2}' | sed -e "s/^/kill -9 /g" | sh -
+    # pid="`ps -ef | grep tomcat | grep -v grep | awk '{print $2 }'`"
+    # 迷之grep 第一次把所有的含tomcat路径的进程返回 包含 这个当前命令的进程本身因为参数中含tomcat路径 第二个grep去掉grep命令进程 第三个才是真正的tomcat进程
+    ps -ef | grep ${server_path##*/} | grep -v grep | grep ${server_path}/conf/logging.properties | awk '{print $2 }' | sed -e "s/^/kill -9 /g" | sh -
     echo "tomcat 进程已杀死"
 }
 
@@ -78,5 +81,3 @@ if [[ "$1" != "" ]]; then
 fi
 #启动tomcat
 tomcat_start
-
-
