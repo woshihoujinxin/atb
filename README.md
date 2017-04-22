@@ -43,7 +43,7 @@
       -h                                        帮助
       -l                                        自动编译打包本地部署
       -r <server_flag>                          自动编译打包远程部署到指定的远程服务器
-      -his -r <server_flag>                     查看指定的远程服务器上备份详情"
+      -r <server_flag> -his                     查看指定的远程服务器上备份详情"
       -r <server_flag> -rb <backup_version>     回滚当前版本到backup_version指定的版本"
 
 ```
