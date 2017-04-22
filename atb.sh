@@ -39,8 +39,8 @@ function show_help(){
     echo " -h                                    帮助"
     echo " -l                                    自动编译打包本地部署"
     echo " -r <server_flag>                      自动编译打包远程部署到指定的远程服务器"
-    echo " -his -r <server_flag>                 查看指定的远程服务器上备份历史"
-    echo " -r -rb <server_flag> <backup_version> 将指定服务器web应用回滚到指定版本"
+    echo " -r <server_flag> -his                 查看指定的远程服务器上备份历史"
+    echo " -r <server_flag> -rb <backup_version> 将指定服务器web应用回滚到指定版本"
 }
 
 ##############################################################################
