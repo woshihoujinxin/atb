@@ -147,7 +147,6 @@ function init_checkout_code(){
 ###       若脚本不存在上传restart脚本 接收参数: 文件名: $1, 远程配置数组索引 $2
 ##############################################################################
 function upload_restart_file(){
-    echo `pwd`
     if ! ssh ${remote_users[$2]}@${remote_ips[$2]} test -e "${remote_shell_dir}/$1"; then
          echo "ip: [ ${remote_ips[$2]} ] restart.sh文件上传中..."
          scp ${ATB_HOME}/bin/$1 "${remote_users[$2]}@${remote_ips[$2]}:${remote_shell_dir}"
