@@ -27,16 +27,16 @@
 
 ## 快速上手
 1. 检出代码
-> `git clone https://git.oschina.net/houjinxin/auto_build_shell`
+    `git clone https://git.oschina.net/houjinxin/auto_build_shell`
 2. 设置环境变量
-> `export ATB_HOME=${your path}`
-> `export PATH=$PATH:$ATB_HOME/bin`
-> `source ${your profile}`
+    `export ATB_HOME=${your path}`
+    `export PATH=$PATH:$ATB_HOME/bin`
+    `source ${your profile}`
 3. 修改权限
-  `chmod +x ${ATB_HOME}/bin/*`
+    `chmod +x ${ATB_HOME}/bin/*`
 4. 修改conf.ini文件中的配置项，参考：[配置说明](docs/配置说明.md)
 5. 初始化
-  `atb.sh -i`
+   `atb.sh -i`
 6. 具体用法见下面帮助
 
 ```
