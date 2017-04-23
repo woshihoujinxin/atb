@@ -51,6 +51,7 @@ function read_ini() {
     ini_file=$1;
     section=$2;
     key=$3
+    # TODO:筛选出#开头的行
     awk -F '=' '/\['$section'\]/{a=1}a==1&&$1~/'$key'/{ for (i=1; i<= split($2,array,","); i++) print array[i]" "}' $ini_file
     # awk -F '=' '/\['$section'\]/{a=1}a==1&&$1~/'$key'/{ print $2 }' $ini_file
 }
