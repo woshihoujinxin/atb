@@ -10,7 +10,7 @@
 * 自动重启远程或本地服务器
 * 自动查看启动日志
 * 支持windows（依赖Git For Windows）、linux、mac系统
-* 自动备份功能，开关可控，可配置最大备份数，默认路径:${tomcat_path}/backup，
+* 自动备份功能，开关可控，可配置最大备份数，默认路径:${tomcat_path}/backup
 * 查看服务器上备份历史
 * 自动回滚到指定版本
 
@@ -26,17 +26,24 @@
 * 配置ssh免密码登录（防止操作过程中频繁输入密码）
 
 ## 快速上手
-1. 设置执行atb.sh与restart.sh的执行权限
-2. 将atb.sh放到本机任意目录下，然后将该目录路径设置到环境变量中，
-3. 将conf.ini文件放到家目录下,即命令行执行`cd`所进入的目录
+1. 检出代码
+  `git clone https://git.oschina.net/houjinxin/auto_build_shell`
+2. 设置环境变量
+  `export ATB_HOME=${your path}`
+  `export PATH=$PATH:$ATB_HOME/bin`
+  `source ${your profile}`
+3. 修改权限
+  `chmod +x ${ATB_HOME}/bin/*`
 4. 修改conf.ini文件中的配置项，参考：[配置说明](docs/配置说明.md)
-5. 将restart.sh放到服务器上指定目录，如：`/home/product`，在conf.ini中修改`config_remote_shell_dir=/home/product`
-5. 具体用法见下面帮助
+5. 初始化
+  `atb.sh -i`
+6. 具体用法见下面帮助
 
 ```
  usage: atb [Options]
 
      Options：
+      -i                                        根据配置文件进行初始化
       -c                                        clean 工程
       -du [ -l ]                                直接上传已存在war包到本地服务器
       -du -r <server_flag>                      直接上传已存在war包到指定的远程服务器
@@ -50,6 +57,7 @@
 
 ```
     Options说明
+     i                       -- init            初始化项目
      c                       -- clean           来自mvn clean
      du                      -- direct upload   已有war包，直接上传；没有war包，重新打包上传 
      h                       -- help            帮助
@@ -64,10 +72,11 @@
 
 ## 示例
 ```
-    `atb.sh -du -r` war包已存在的情况下直接发布war包到远程服务器，不存在重新打包再发布
+    `atb.sh -i` 初始化环境
+    `atb.sh -r -du` war包已存在的情况下直接发布war包到远程服务器，不存在重新打包再发布
     `atb.sh` 本地发布 等同于 `atb.sh -l`
     `atb.sh -r 244` 如果你的remote_server_flags中包含244 那么就会发布到244所代表的机器上
-    `atb.sh -his -r 244` 查看244上备份历史
+    `atb.sh -r 244 -his` 查看244上备份历史
     `atb.sh -r 244 -rb maiev_20170415211120` 244机器上回滚当前版本到2017-04-15 21:11:20的版本
 
 ```
@@ -82,14 +91,14 @@
 * mac
 
 ## CHANGELOG
-### v1.0.1
-* 重新定义了配置文件，使用ini格式的配置文件，并将要配置的属性分类处理
-* 简化配置，服务端配置全部去掉，只留一个conf.ini，去掉了一些冗余的配置
-* 代码检出命令可以通过配置指定，不必再修改atb.sh
-* 修复远程多机部署BUG,在配置文件remote-server节点下修改各属性，不同机器配置用英文逗号或空格隔开
-* 修改README.md，配置说明单独放到一个文件
-* 增加了配置服务器备份文件数量的功能
-* 修改了发布流程，备份功能开启状态时先备份war包到backup目录,再关闭tomcat，然后删除旧版，拷贝新版到webapps下最后重启 
+### v1.0.2 
+* 增加了初始化功能
+    - 自动创建`本地发版`和`远程发版`路径
+    - 自动检版查本管理工具（依赖配置文件中command节点的配置，请务必保证书写争取）
+    - 自动检出代码
+    - 自动上传`restart.sh`脚本到不同服务器
+    - 不再需要拷贝`conf.ini`到家目录，而是直接从`conf/conf.ini`读取配置信息
+* 必须设置环境变量否则将无法执行
 * [更多](CHANGELOG.md)
 
 ## 我的联系方式
@@ -98,12 +107,8 @@
 * 微信：h574311651
 
 ## TODO事项
-* 实现初始化命令，功能如下
-   - 修改配置文件后执行该命令，拷贝restart.sh到指定的服务器
-   - 将配置文件拷贝到家目录
-* 流程扩展，根据配置文件定义，实现从检出代码（即使代码不存在）、编译打包、上传、备份、重启服务、打印日志整个流程
 * 考虑支持其他类型的工程结构的支持，如gradle
-* 考虑对Mysql数据库升级与回退的支持 
+* 考虑支持SpringBoot工程的构建
 
 ## 需求征集
 如果你们有任何好的想法和需求都可以告诉我，我来完善。

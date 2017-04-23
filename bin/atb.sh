@@ -59,7 +59,7 @@ function read_ini() {
 ###       初始化
 ##############################################################################
 function init(){
-	show_banner
+    show_banner
     echo "atb 初始化中..."
     echo "正在检查本地发版路径..."
     check_path_and_create ${local_project_basepath}
@@ -69,14 +69,14 @@ function init(){
     echo "检测到当前配置代码管理工具为 [ ${checkout_command[0]} ]" 
     case "${checkout_command[0]}" in
         svn )
-			init_checkout_command=(svn checkout)
-			init_checkout_code ${local_project_basepath} "${init_checkout_command[*]}"
-			init_checkout_code ${remote_project_basepath} "${init_checkout_command[*]}"
+            init_checkout_command=(svn checkout)
+            init_checkout_code ${local_project_basepath} "${init_checkout_command[*]}"
+            init_checkout_code ${remote_project_basepath} "${init_checkout_command[*]}"
             ;;
         git )
-			init_checkout_command=(git clone)
-			init_checkout_code ${local_project_basepath} "${init_checkout_command[*]}"
-			init_checkout_code ${remote_project_basepath} "${init_checkout_command[*]}"
+            init_checkout_command=(git clone)
+            init_checkout_code ${local_project_basepath} "${init_checkout_command[*]}"
+            init_checkout_code ${remote_project_basepath} "${init_checkout_command[*]}"
             ;;
     esac
     # echo "正在检查构建工具..."
@@ -92,10 +92,10 @@ function init(){
     # esac
     for i in "${!remote_ips[@]}"; do  
         # 初始化时的command_ssh
-    	command_ssh=(ssh -t -T -p ${remote_ports[$i]} ${remote_users[$i]}@${remote_ips[i]})
+        command_ssh=(ssh -t -T -p ${remote_ports[$i]} ${remote_users[$i]}@${remote_ips[i]})
         echo "正在检查${remote_ips[$i]} 上 [ ${remote_shell_dir} ] 是否存在..."
-	    check_remote_path_and_create $i
-	    upload_restart_file ${remote_shell_name} $i
+        check_remote_path_and_create $i
+        upload_restart_file ${remote_shell_name} $i
     done
     
     exit 0
@@ -105,39 +105,39 @@ function init(){
 ###       本地及远程路径检查 不存在则创建
 ##############################################################################
 function check_path_and_create(){
-	if [[ ! -e "$1" ]]; then
-		echo "开始创建文件夹 [ $1 ] "
-		mkdir -p $1
-		return 0
-	fi
-	echo "[ $1 ] 已存在"
-	return 0
+    if [[ ! -e "$1" ]]; then
+        echo "开始创建文件夹 [ $1 ] "
+        mkdir -p $1
+        return 0
+    fi
+    echo "[ $1 ] 已存在"
+    return 0
 }
 
 ##############################################################################
 ###       若脚本不存在上传restart脚本 接收参数: 远程配置数组索引$1
 ##############################################################################
 function check_remote_path_and_create(){
-	if ! ssh ${remote_users[$1]}@${remote_ips[$1]} test -d ${remote_shell_dir}; then
-		echo "开始创建文件夹 [ ${remote_shell_dir} ] "
-		# echo ${command_ssh[@]} "mkdir -p ${remote_shell_dir}"
-		${command_ssh[@]} "mkdir -p ${remote_shell_dir}"
-		return 0
-	fi
-	echo "${remote_users[$1]}@${remote_ips[$1]} 上 [ ${remote_shell_dir} ] 已存在"
-	return 0
+    if ! ssh ${remote_users[$1]}@${remote_ips[$1]} test -d ${remote_shell_dir}; then
+        echo "开始创建文件夹 [ ${remote_shell_dir} ] "
+        # echo ${command_ssh[@]} "mkdir -p ${remote_shell_dir}"
+        ${command_ssh[@]} "mkdir -p ${remote_shell_dir}"
+        return 0
+    fi
+    echo "${remote_users[$1]}@${remote_ips[$1]} 上 [ ${remote_shell_dir} ] 已存在"
+    return 0
 }
 
 ##############################################################################
 ###       检查是否已经初始化过，若未初始化则检出代码（异步执行）
 ##############################################################################
 function init_checkout_code(){
-	# echo $2
-	#文件夹判空
-	count=`ls $1|wc -w`
-	if [[ "$count" -eq "0" ]]; then
-    	echo "开始从资源库 [ ${repository_url} ] 检出代码" 
-    	cd $1 && $2 ${repository_url} && exit 0 &
+    # echo $2
+    #文件夹判空
+    count=`ls $1|wc -w`
+    if [[ "$count" -eq "0" ]]; then
+        echo "开始从资源库 [ ${repository_url} ] 检出代码" 
+        cd $1 && $2 ${repository_url} && exit 0 &
     fi
     echo "[ $1 ] 代码已检出"
     return 0
@@ -147,12 +147,13 @@ function init_checkout_code(){
 ###       若脚本不存在上传restart脚本 接收参数: 文件名: $1, 远程配置数组索引 $2
 ##############################################################################
 function upload_restart_file(){
-	if ! ssh ${remote_users[$2]}@${remote_ips[$2]} test -e "${remote_shell_dir}/$1"; then
-		 echo "ip: [ ${remote_ips[$2]} ] restart.sh文件上传中..."
-         scp $1 "${remote_users[$2]}@${remote_ips[$2]}:${remote_shell_dir}"
-		return 0
-	fi
-	echo "${remote_users[$2]}@${remote_ips[$2]} [ ${remote_shell_dir}/$1 ] 已存在"
+    echo `pwd`
+    if ! ssh ${remote_users[$2]}@${remote_ips[$2]} test -e "${remote_shell_dir}/$1"; then
+         echo "ip: [ ${remote_ips[$2]} ] restart.sh文件上传中..."
+         scp ${ATB_HOME}/bin/$1 "${remote_users[$2]}@${remote_ips[$2]}:${remote_shell_dir}"
+        return 0
+    fi
+    echo "${remote_users[$2]}@${remote_ips[$2]} [ ${remote_shell_dir}/$1 ] 已存在"
     return 0
 }
 
@@ -351,7 +352,6 @@ function deploy_flow(){
 ###       输出参数详情
 ##############################################################################
 function echo_params(){
-    echo "[info] "
     echo "[info] REMOTE SERVER INFO"
     echo "[info] ------------------------------------------------------------------------"
     echo "[info] remote_server_paths = ${remote_server_paths[@]}"
@@ -415,11 +415,25 @@ function echo_params(){
     echo ""
 }
 
+show_banner
 ##############################################################################
 ###    变量声明 var=value 等号必须前后紧挨着
 ##############################################################################
+if   [[ ! -n ${ATB_HOME} ]]; 
+then 
+    echo "[info] "
+    echo "[info] 环境变量ATB_HOME未设置，请设置后再执行"
+    exit 0
+else 
+    echo "[info] "
+    echo "[info] ATB_HOME INFO"
+    echo "[info] ------------------------------------------------------------------------"
+    echo "[info] ATB_HOME : ${ATB_HOME}"
+    echo "[info] ------------------------------------------------------------------------"
+fi
 #配置文件路径名称
-conf_filename=../conf/conf.ini
+# conf_filename=~/conf.ini
+conf_filename=${ATB_HOME}/conf/conf.ini
 #以下参数代表服务器配置信息有多少机器配置多少个,这里的配置用于取值
 #远程服务器路径
 remote_server_paths=( $( read_ini ${conf_filename} remote-server config_remote_server_paths ) ) 
@@ -598,7 +612,6 @@ fi
 ##############################################################################
 command_ssh=(ssh -t -T -p ${remote_port} ${remote_user}@${remote_ip})
 
-show_banner
 #debug时查看参数输出
 echo_params
 
