@@ -8,3 +8,4 @@
 * [Linux命令搜索](http://linux-command.composer-proxy.org/c/find.html)
 * [Linux系统命令大全](http://man.linuxde.net/)
 * [如何查看远程机器上文件夹是否存在](http://www.4byte.cn/learning/120050/ru-he-jian-cha-wen-jian-shi-fou-cun-zai-yu-yuan-cheng-fu-wu-qi-shang.html)
+* [Shell变量详解](http://www.cnblogs.com/barrychiao/archive/2012/10/22/2733210.html)
