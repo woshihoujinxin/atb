@@ -29,7 +29,7 @@
 1. 检出代码
 
     `git clone https://git.oschina.net/houjinxin/auto_build_shell`
-2. 设置环境变量
+2. linux、mac系统设置环境变量 （windows系统自行百度）
 
     ```SHELL
         export ATB_HOME=${your path}
