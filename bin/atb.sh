@@ -51,8 +51,8 @@ function read_ini() {
     ini_file=$1;
     section=$2;
     key=$3
-    # TODO:筛选出#开头的行
-    awk -F '=' '/\['$section'\]/{a=1}a==1&&$1~/'$key'/{ for (i=1; i<= split($2,array,","); i++) print array[i]" "}' $ini_file
+    # 以'='做分隔符，排除'#'开头的行. 找到节点下面的匹配key的行，按'='分割为$1 $2 $2即所需要的值，如果$2为逗号分开的数组 则转换为shell数组
+    awk -F '=' '/^[^#]/{}/\['$section'\]/{a=1}a==1&&$1~/'$key'/{ for (i=1; i<= split($2,array,","); i++) print array[i]" "}' $ini_file
     # awk -F '=' '/\['$section'\]/{a=1}a==1&&$1~/'$key'/{ print $2 }' $ini_file
 }
 
