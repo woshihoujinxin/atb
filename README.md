@@ -61,6 +61,7 @@
  usage: atb [Options]
 
      Options：
+      -v                                        版本号与项目信息
       -i                                        根据配置文件进行初始化
       -c                                        clean 工程
       -du [ -l ]                                直接上传已存在war包到本地服务器
@@ -74,7 +75,8 @@
 ```
 
 ```
-    Options说明
+    Options说明 
+     v                       -- version         版本信息
      i                       -- init            初始化项目
      c                       -- clean           来自mvn clean
      du                      -- direct upload   已有war包，直接上传；没有war包，重新打包上传 

@@ -33,6 +33,7 @@ function show_help(){
     echo "usage: atb [Options]"
     echo
     echo "Options："
+    echo " -v                                    版本号与项目信息"
     echo " -i                                    根据配置文件进行初始化"
     echo " -c                                    clean 工程"
     echo " -du  [ -l ]                           跳过编译步骤直接上传已存在war包到本地服务器"
@@ -51,8 +52,9 @@ function read_ini() {
     ini_file=$1;
     section=$2;
     key=$3
-    # 以'='做分隔符，排除'#'开头的行. 找到节点下面的匹配key的行，按'='分割为$1 $2 $2即所需要的值，如果$2为逗号分开的数组 则转换为shell数组
-    awk -F '=' '/^[^#]/{}/\['$section'\]/{a=1}a==1&&$1~/'$key'/{ for (i=1; i<= split($2,array,","); i++) print array[i]" "}' $ini_file
+    # 读取配置文件，排除'#'开头的行，将结果作为awk的输入
+    # 以'='做分隔符,找到节点下面的匹配key的行，按'='分割为$1 $2 $2即所需要的值，如果$2为逗号分开的数组 则转换为shell数组
+    sed -e s/^#.*//g $ini_file | awk -F '=' '/^[^#]/{}/\['$section'\]/{a=1}a==1&&$1~/'$key'/{ for (i=1; i<= split($2,array,","); i++) print array[i]" "}'
     # awk -F '=' '/\['$section'\]/{a=1}a==1&&$1~/'$key'/{ print $2 }' $ini_file
 }
 
@@ -415,6 +417,12 @@ function echo_params(){
     echo ""
 }
 
+function version(){
+    echo "[info] atb version \"1.0.2\"" 
+    echo "[info] project link: http://git.oschina.net/houjinxin/auto_build_shell" 
+    echo "[info] ------------------------------------------------------------------------"
+}
+
 show_banner
 ##############################################################################
 ###    变量声明 var=value 等号必须前后紧挨着
@@ -553,7 +561,8 @@ else
         -rb      ) remote_rollback="-rb"              ;;
         [0-9]*   ) server_flag="$1"                   ;;
         *_[0-9]* ) backup_version="$1"                ;;
-        -i     ) init;  exit 0                      ;;
+        -i       ) init;  exit 0                      ;;
+        -v       ) version;  exit 0                      ;;
         *        ) echo "$1 is invalid"; exit 0;      ;;
         esac
         shift
