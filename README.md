@@ -43,6 +43,12 @@
 5. 初始化
 
     `atb.sh -i`
+6. 发布
+
+    ```SHELL
+        atb.sh -l # 本地
+        atb.sh -r <server_flag> #远程
+    ```
 6. 具体用法见下面帮助
 
 ```
