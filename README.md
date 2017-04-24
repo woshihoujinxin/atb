@@ -2,7 +2,7 @@
 ## 特别感谢
 * 感谢t-io作者[谭总](http://git.oschina.net/tywo45)的大力支持。
 * 感谢谭总将我列入t-io企业级支持的用户，我的荣幸，[点我](http://www.t-io.org:9292/donate.html?v=1)。
-* 他也是第一捐助本项目的人 :pray: 。
+* 他也是第一以资鼓励本项目的人 :pray: 。
 
 ## ATB交流QQ群：== [326363033](https://shang.qq.com/wpa/qunwpa?idkey=04c38c2f3d6aebca1930ddd5f3ccf9a5581bc0e4fffd6ea156c1cebe9e4b3716) ==
 
