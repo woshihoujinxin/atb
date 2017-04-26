@@ -34,7 +34,7 @@
 ## 快速上手
 1. 检出代码
 
-    `git clone https://git.oschina.net/houjinxin/auto_build_shell`
+    `git clone https://git.oschina.net/houjinxin/auto_build_shell.git`
 2. linux、mac系统设置环境变量 （windows系统自行百度）
 
     ```SHELL
